@@ -4,6 +4,7 @@ import type pg from "pg";
 import type { AppConfig } from "./config.js";
 import { config } from "./config.js";
 import { createPool, type Queryable } from "./db.js";
+import { demoPageHtml } from "./demo.js";
 import { HttpError } from "./errors.js";
 import { registerOrderRoutes } from "./orders/routes.js";
 
@@ -38,14 +39,9 @@ export async function buildServer(options: ServerOptions = {}) {
     ok: true
   }));
 
-  app.get("/", async () => ({
-    service: "order-history-tech-spec",
-    status: "ok",
-    endpoints: {
-      health: "/health",
-      orderHistory: "/v1/orders"
-    }
-  }));
+  app.get("/", async (_request, reply) =>
+    reply.type("text/html; charset=utf-8").send(demoPageHtml())
+  );
 
   await registerOrderRoutes(app, { config: appConfig, db });
 

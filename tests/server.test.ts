@@ -5,7 +5,7 @@ import { buildServer } from "../src/server.js";
 import { customerId, testConfig } from "./fixtures.js";
 
 describe("server routes", () => {
-  it("serves a root service descriptor", async () => {
+  it("serves the demo console at the root route", async () => {
     const app = await buildServer({
       appConfig: testConfig,
       db: fakeDb()
@@ -13,14 +13,10 @@ describe("server routes", () => {
 
     const response = await app.inject({ method: "GET", url: "/" });
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      service: "order-history-tech-spec",
-      status: "ok",
-      endpoints: {
-        health: "/health",
-        orderHistory: "/v1/orders"
-      }
-    });
+    expect(response.headers["content-type"]).toContain("text/html");
+    expect(response.body).toContain("Order History Console");
+    expect(response.body).toContain("Run checks");
+    expect(response.body).toContain("/v1/orders");
 
     await app.close();
   });

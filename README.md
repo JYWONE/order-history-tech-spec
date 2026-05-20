@@ -1,24 +1,63 @@
 # Order History Tech Spec
 
-Planning repo for an order history lookup system that supports users, stores, and delivery people at large order volume.
+MVP API and demo console for a read-optimized order history lookup system.
 
-## Goal
+The root route (`/`) serves a presentation console that demonstrates the lookup contract, smoke checks the live API, and falls back to sample rows when the database has not been seeded. API routes remain under `/health` and `/v1/orders`.
 
-Design a storage and lookup system for food order history with clear access patterns, indexing, traffic assumptions, and operational guardrails before implementation choices harden.
+## Local setup
 
-## Current focus
+```bash
+npm ci
+docker compose up -d
+npm run migrate
+npm run seed
+npm run dev
+```
 
-- Define the product query contract before choosing final infrastructure.
-- Validate capacity assumptions for orders, items, updates, and reads.
-- Specify indexes for user, store, delivery person, and order ID lookup paths.
-- Separate core exact lookup from optional natural-language input.
-- Capture security, privacy, retention, and authorization requirements.
+Open `http://localhost:3000` for the demo console.
+
+## Validation
+
+```bash
+npm test
+npm run build
+npm run test:integration
+```
+
+Integration tests require local Postgres from `docker compose up -d` and applied migrations.
+
+## Render
+
+Use Node runtime settings:
+
+```text
+Build Command: npm ci && npm run build
+Start Command: npm start
+Health Check Path: /health
+```
+
+Environment variables:
+
+```text
+DATABASE_URL=<Render internal Postgres URL>
+NODE_VERSION=22.21.1
+PGPOOL_MAX=10
+QUERY_WINDOW_MAX_DAYS=93
+LATEST_LOOKBACK_DAYS=90
+```
+
+For local migration or seeding against Render Postgres, use the external URL with TLS:
+
+```bash
+DATABASE_URL='<external-url>?sslmode=require' npm run migrate
+DATABASE_URL='<external-url>?sslmode=require' npm run seed
+```
 
 ## Repo structure
 
-- `docs/tech-spec-outline.md`: spec skeleton to fill in.
-- `docs/review-pushback.md`: architectural pushback and open questions from the initial review.
-
-## Near-term next step
-
-Answer the open questions in `docs/review-pushback.md`, then convert the outline into a versioned technical design.
+- `MVP_TECH_SPEC.md`: current product and storage contract.
+- `src/server.ts`: Fastify app, health route, demo route, and order routes.
+- `src/demo.ts`: self-contained presentation console.
+- `migrations/`: partitioned Postgres schema and indexes.
+- `scripts/seed.ts`: deterministic demo data for local or Render smoke tests.
+- `tests/`: unit and integration coverage for auth, query normalization, pagination, partition routing, and scoping.

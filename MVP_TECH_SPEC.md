@@ -105,12 +105,14 @@ Deferred:
 
 ## 6. Capacity
 
-Assumption: `100M` orders/week.
+Assumption: `10M` orders/week (baseline).
 
-- Average order rate: about `165 orders/sec`.
-- Write amplification: header + items + lifecycle/payment events, roughly `2,000 writes/sec` average and `10k writes/sec` peak.
-- Active rows: about `450k` average at a 45-minute active lifetime, with `1-2M` possible at meal peaks.
-- Storage estimate: about `3.7KB/order`, roughly `370GB/week`, `4.8TB` for 90 days, and `19TB/year`.
+- Average order rate: about `16.5 orders/sec`; roughly `80/sec` at ~5x meal peaks.
+- Write amplification: header + items + lifecycle/payment events (~12 writes/order), roughly `200 writes/sec` average and `~1,000 writes/sec` peak. One Postgres primary handles this comfortably.
+- Active rows: about `45k` average at a 45-minute active lifetime, more at meal peaks. A real indexed working set, not "thousands."
+- Storage estimate: about `3.7KB/order`, roughly `37GB/week`, `~480GB` hot for 90 days, and `~1.9TB/year`.
+- Online history at 90 days: about `129M` orders.
+- Stress headroom: at `100M/week` (10x) these scale ~linearly to `~165/sec` and `~4.8TB`/90 days — the same partition + index strategy holds.
 - Peak read QPS is still unknown and drives replica count.
 
 ## 7. Stack

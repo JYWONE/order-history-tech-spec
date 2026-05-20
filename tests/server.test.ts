@@ -63,13 +63,11 @@ describe("server routes", () => {
     });
 
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      data: [],
-      page: {
-        limit: 50,
-        nextCursor: null
-      }
-    });
+    const body = response.json();
+    expect(body.data).toEqual([]);
+    expect(body.page).toEqual({ limit: 50, nextCursor: null });
+    expect(typeof body.meta.lookupMs).toBe("number");
+    expect(body.meta.partitionWindow.monthsSpanned).toBeGreaterThanOrEqual(1);
     expect(db.query).toHaveBeenCalledOnce();
 
     await app.close();

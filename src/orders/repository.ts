@@ -60,7 +60,10 @@ export interface OrderItem {
 
 export async function listOrders(db: Queryable, input: NormalizedListOrdersQuery) {
   const query = buildListOrdersQuery(input);
+  const startedAt = performance.now();
   const result = await db.query<OrderRow>(query.text, query.values);
+  const lookupMs = Math.round((performance.now() - startedAt) * 100) / 100;
+
   const rows = result.rows;
   const visibleRows = rows.slice(0, input.limit);
   const hasMore = rows.length > input.limit;
@@ -77,8 +80,44 @@ export async function listOrders(db: Queryable, input: NormalizedListOrdersQuery
               orderId: lastRow.order_id
             })
           : null
+    },
+    meta: {
+      lookupMs,
+      partitionWindow: partitionWindow(input)
     }
   };
+}
+
+// demo affordance: run the caller's own scoped query under EXPLAIN to show partition pruning + index use
+export async function explainListOrders(db: Queryable, input: NormalizedListOrdersQuery) {
+  const query = buildListOrdersQuery(input);
+  const result = await db.query<{ "QUERY PLAN": unknown }>(
+    `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) ${query.text}`,
+    query.values
+  );
+
+  return {
+    explain: result.rows[0]?.["QUERY PLAN"] ?? null,
+    partitionWindow: partitionWindow(input)
+  };
+}
+
+function partitionWindow(input: NormalizedListOrdersQuery) {
+  return {
+    from: input.dateWindow.from.toISOString(),
+    to: input.dateWindow.to.toISOString(),
+    monthsSpanned: monthsSpanned(input.dateWindow.from, input.dateWindow.to)
+  };
+}
+
+// how many monthly partitions the [from, to) window touches
+function monthsSpanned(from: Date, to: Date): number {
+  const lastInclusive = new Date(to.getTime() - 1);
+  return (
+    (lastInclusive.getUTCFullYear() - from.getUTCFullYear()) * 12 +
+    (lastInclusive.getUTCMonth() - from.getUTCMonth()) +
+    1
+  );
 }
 
 export async function getOrderById(

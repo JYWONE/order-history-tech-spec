@@ -6,7 +6,7 @@ import type { Principal } from "../../src/auth.js";
 import { createPool } from "../../src/db.js";
 import { insertOrder, type NewOrder } from "../../src/orders/ingest.js";
 import { normalizeListOrdersQuery } from "../../src/orders/queries.js";
-import { getOrderById, listOrders } from "../../src/orders/repository.js";
+import { explainListOrders, getOrderById, listOrders } from "../../src/orders/repository.js";
 import type { OrderStatus } from "../../src/types.js";
 import { testConfig } from "../fixtures.js";
 
@@ -132,5 +132,24 @@ describe("order history lookup against real Postgres", () => {
   it("hides an order outside the store's scope", async () => {
     const order = await getOrderById(pool, store1, store2OrderId);
     expect(order).toBeNull();
+  });
+
+  it("reports DB lookup timing and the partition window in meta", async () => {
+    const result = await listOrders(pool, normalizeListOrdersQuery(mayWindow, customerA, testConfig));
+    expect(typeof result.meta.lookupMs).toBe("number");
+    expect(result.meta.lookupMs).toBeGreaterThanOrEqual(0);
+    expect(result.meta.partitionWindow.monthsSpanned).toBe(1);
+  });
+
+  it("prunes to the in-window partition under EXPLAIN", async () => {
+    const result = await explainListOrders(pool, normalizeListOrdersQuery(mayWindow, customerA, testConfig));
+    const explain =
+      typeof result.explain === "string" ? JSON.parse(result.explain) : result.explain;
+
+    const planText = JSON.stringify(explain);
+    // the May window must touch the May partition and prune the April one
+    expect(planText).toContain("orders_2026_05");
+    expect(planText).not.toContain("orders_2026_04");
+    expect(typeof explain[0]["Execution Time"]).toBe("number");
   });
 });

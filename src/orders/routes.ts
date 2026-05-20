@@ -6,7 +6,7 @@ import { requirePrincipal } from "../auth.js";
 import type { AppConfig } from "../config.js";
 import type { Queryable } from "../db.js";
 import { badRequest, notFound } from "../errors.js";
-import { getOrderById, listOrders } from "./repository.js";
+import { explainListOrders, getOrderById, listOrders } from "./repository.js";
 import { normalizeListOrdersQuery } from "./queries.js";
 
 const orderIdParamsSchema = z
@@ -28,11 +28,12 @@ export async function registerOrderRoutes(
     secured.addHook("preHandler", requirePrincipal);
 
     secured.get("/v1/orders", async (request) => {
-      const query = normalizeListOrdersQuery(
-        request.query,
-        request.principal,
-        deps.config
-      );
+      const { _explain, ...rawQuery } = (request.query ?? {}) as Record<string, unknown>;
+      const query = normalizeListOrdersQuery(rawQuery, request.principal, deps.config);
+
+      if (_explain === "true") {
+        return explainListOrders(deps.db, query);
+      }
 
       return listOrders(deps.db, query);
     });

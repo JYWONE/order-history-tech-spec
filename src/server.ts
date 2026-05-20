@@ -38,6 +38,15 @@ export async function buildServer(options: ServerOptions = {}) {
     ok: true
   }));
 
+  app.get("/", async () => ({
+    service: "order-history-tech-spec",
+    status: "ok",
+    endpoints: {
+      health: "/health",
+      orderHistory: "/v1/orders"
+    }
+  }));
+
   await registerOrderRoutes(app, { config: appConfig, db });
 
   app.addHook("onClose", async () => {

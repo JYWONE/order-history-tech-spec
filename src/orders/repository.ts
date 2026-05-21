@@ -123,9 +123,9 @@ function monthsSpanned(from: Date, to: Date): number {
 export async function getOrderById(
   db: Queryable,
   principal: NormalizedListOrdersQuery["principal"],
-  orderId: string
+  orderId: string,
+  orderMonth: TimeRange = monthRangeFromUuidV7(orderId)
 ): Promise<OrderDetail | null> {
-  const orderMonth = monthRangeFromUuidV7(orderId);
   const orderQuery = buildGetOrderQuery(principal, orderId, orderMonth);
   const orderResult = await db.query<OrderRow>(orderQuery.text, orderQuery.values);
   const order = orderResult.rows[0];

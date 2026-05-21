@@ -15,7 +15,9 @@ describe("server routes", () => {
     expect(response.statusCode).toBe(200);
     expect(response.headers["content-type"]).toContain("text/html");
     expect(response.body).toContain("Order History Console");
-    expect(response.body).toContain("Run checks");
+    expect(response.body).toContain("Copy as curl");
+    expect(response.body).toContain("Explain plan");
+    expect(response.body).toContain("Scale math");
     expect(response.body).toContain("/v1/orders");
 
     await app.close();
@@ -68,6 +70,7 @@ describe("server routes", () => {
     expect(body.page).toEqual({ limit: 50, nextCursor: null });
     expect(typeof body.meta.lookupMs).toBe("number");
     expect(body.meta.partitionWindow.monthsSpanned).toBeGreaterThanOrEqual(1);
+    expect(response.headers["server-timing"]).toContain("db;dur=");
     expect(db.query).toHaveBeenCalledOnce();
 
     await app.close();

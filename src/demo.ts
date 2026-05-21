@@ -5,23 +5,21 @@ export function demoPageHtml() {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Order History Console</title>
+    <link rel="icon" href="data:," />
     <style>
       :root {
         color-scheme: light;
         --ink: #111615;
-        --muted: #5f6b65;
-        --quiet: #eef2ef;
-        --line: #d9e0db;
+        --muted: #66736d;
+        --line: #dbe2dd;
+        --soft: #f3f6f3;
         --panel: #ffffff;
-        --field: #f8faf8;
         --accent: #1f7a5a;
         --accent-strong: #14533e;
-        --lime: #c8ea62;
-        --coral: #e36d4f;
-        --blue: #4d6edb;
+        --blue: #405fd6;
         --amber: #b96a13;
         --danger: #b42318;
-        --shadow: 0 18px 60px rgba(17, 22, 21, 0.12);
+        --shadow: 0 18px 54px rgba(17, 22, 21, 0.11);
       }
 
       * {
@@ -38,16 +36,15 @@ export function demoPageHtml() {
         margin: 0;
         color: var(--ink);
         background:
-          linear-gradient(120deg, rgba(200, 234, 98, 0.16), transparent 30%),
-          linear-gradient(180deg, #f7f9f7 0%, #eef3ef 100%);
+          linear-gradient(135deg, rgba(31, 122, 90, 0.12), transparent 30%),
+          linear-gradient(180deg, #fbfcfb 0%, #eef3ef 100%);
         font-family:
           Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
           "Segoe UI", sans-serif;
       }
 
       button,
-      input,
-      select {
+      input {
         font: inherit;
       }
 
@@ -56,30 +53,30 @@ export function demoPageHtml() {
         cursor: pointer;
       }
 
-      .shell {
+      .app {
         display: grid;
         min-height: 100svh;
-        grid-template-rows: auto 1fr;
+        grid-template-rows: auto 1fr auto;
       }
 
       .topbar {
-        display: grid;
-        grid-template-columns: minmax(220px, 1fr) auto auto;
-        gap: 18px;
+        display: flex;
         align-items: center;
-        padding: 18px 24px;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 18px 28px;
         border-bottom: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.84);
-        backdrop-filter: blur(16px);
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(14px);
         position: sticky;
         top: 0;
-        z-index: 5;
+        z-index: 10;
       }
 
       .brand {
         display: flex;
-        gap: 12px;
         align-items: center;
+        gap: 12px;
         min-width: 0;
       }
 
@@ -89,17 +86,14 @@ export function demoPageHtml() {
         height: 36px;
         place-items: center;
         border-radius: 8px;
-        color: #f7fff7;
-        background: linear-gradient(145deg, var(--accent), #263f36);
-        box-shadow: 0 8px 22px rgba(31, 122, 90, 0.26);
+        color: #ffffff;
+        background: linear-gradient(145deg, var(--accent), #283d35);
         font-size: 13px;
-        font-weight: 800;
-        letter-spacing: 0;
+        font-weight: 850;
       }
 
       h1,
       h2,
-      h3,
       p {
         margin: 0;
       }
@@ -110,342 +104,256 @@ export function demoPageHtml() {
         letter-spacing: 0;
       }
 
-      .subtitle {
-        margin-top: 3px;
+      .subtle {
         color: var(--muted);
         font-size: 13px;
       }
 
-      .status-strip {
-        display: flex;
-        gap: 8px;
+      .contract-badge {
+        display: inline-flex;
+        min-height: 34px;
         align-items: center;
-        justify-content: flex-end;
-        min-width: 0;
-        color: var(--muted);
+        gap: 8px;
+        border: 1px solid rgba(31, 122, 90, 0.24);
+        border-radius: 999px;
+        padding: 0 12px;
+        color: var(--accent-strong);
+        background: #eaf4ee;
         font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
       }
 
-      .pulse {
-        width: 9px;
-        height: 9px;
+      .dot {
+        width: 8px;
+        height: 8px;
         border-radius: 999px;
         background: var(--accent);
-        box-shadow: 0 0 0 0 rgba(31, 122, 90, 0.38);
+        box-shadow: 0 0 0 0 rgba(31, 122, 90, 0.36);
         animation: pulse 2s infinite;
       }
 
-      .primary-action,
-      .secondary-action {
-        min-height: 40px;
-        border-radius: 8px;
-        padding: 0 14px;
-        font-weight: 750;
-        transition:
-          transform 160ms ease,
-          box-shadow 160ms ease,
-          background 160ms ease;
+      main {
+        width: min(1220px, calc(100vw - 40px));
+        margin: 0 auto;
+        padding: 28px 0 24px;
       }
 
-      .primary-action {
+      .lookup-panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 24px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .lookup-heading {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 18px;
+        text-align: center;
+      }
+
+      .lookup-heading h2 {
+        font-size: clamp(27px, 4vw, 52px);
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      .lookup-heading p {
+        max-width: 720px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.5;
+      }
+
+      .lookup-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        width: min(780px, 100%);
+        margin: 0 auto;
+      }
+
+      .lookup-input {
+        min-height: 48px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 14px;
+        color: var(--ink);
+        background: #f8faf8;
+        outline: none;
+      }
+
+      .lookup-input:focus {
+        border-color: rgba(31, 122, 90, 0.7);
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(31, 122, 90, 0.12);
+      }
+
+      .primary,
+      .secondary,
+      .chip,
+      .ghost {
+        min-height: 38px;
+        border-radius: 8px;
+        padding: 0 13px;
+        font-weight: 800;
+        transition:
+          transform 150ms ease,
+          border-color 150ms ease,
+          background 150ms ease;
+      }
+
+      .primary {
+        min-height: 48px;
         color: #ffffff;
         background: var(--accent);
         box-shadow: 0 10px 24px rgba(31, 122, 90, 0.22);
       }
 
-      .secondary-action {
-        color: var(--accent-strong);
-        background: #e6f1eb;
+      .secondary,
+      .ghost {
+        border: 1px solid var(--line);
+        color: #33403b;
+        background: #ffffff;
       }
 
-      .primary-action:hover,
-      .secondary-action:hover {
+      .chip {
+        border: 1px solid var(--line);
+        color: #26332f;
+        background: #ffffff;
+        font-size: 13px;
+      }
+
+      .chip[data-active="true"] {
+        color: var(--accent-strong);
+        border-color: rgba(31, 122, 90, 0.34);
+        background: #eaf4ee;
+      }
+
+      .primary:hover,
+      .secondary:hover,
+      .ghost:hover,
+      .chip:hover {
         transform: translateY(-1px);
       }
 
-      .workspace {
+      .preset-grid {
         display: grid;
-        grid-template-columns: 288px minmax(0, 1fr) 354px;
-        gap: 0;
-        min-height: 0;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 9px;
+        margin-top: 18px;
       }
 
-      .rail,
-      .inspector {
-        min-height: 0;
-        padding: 22px;
-        overflow: auto;
+      .timing-strip {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 14px;
+        align-items: center;
+        margin: 16px 0;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 13px 14px;
+        background: #111615;
+        color: #ffffff;
       }
 
-      .rail {
-        border-right: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.58);
+      .timing-primary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        font-size: 13px;
+        font-weight: 780;
       }
 
-      .inspector {
-        border-left: 1px solid var(--line);
-        background: #fbfcfb;
+      .timing-primary span {
+        display: inline-flex;
+        min-height: 25px;
+        align-items: center;
+        border-radius: 999px;
+        padding: 0 9px;
+        background: rgba(255, 255, 255, 0.11);
+        white-space: nowrap;
       }
 
-      .main {
-        min-width: 0;
-        padding: 24px;
-        overflow: auto;
+      .timing-primary .ok {
+        background: rgba(31, 122, 90, 0.78);
       }
 
-      .section + .section {
-        margin-top: 26px;
+      .timing-primary .fail {
+        background: rgba(180, 35, 24, 0.84);
       }
 
-      .section-title {
+      .timing-detail {
+        margin-top: 7px;
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 12px;
+      }
+
+      .timing-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      .timing-actions button {
+        min-height: 34px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        padding: 0 10px;
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 330px;
+        gap: 16px;
+      }
+
+      .surface {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        overflow: hidden;
+      }
+
+      .surface-head {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-bottom: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+        background: #f8faf8;
       }
 
-      .section-title h2,
-      .section-title h3 {
+      .surface-head h2 {
         font-size: 13px;
-        font-weight: 820;
-        text-transform: uppercase;
-        color: #29332f;
-        letter-spacing: 0;
-      }
-
-      .hint {
-        color: var(--muted);
-        font-size: 12px;
-      }
-
-      .field-stack {
-        display: grid;
-        gap: 12px;
-      }
-
-      label {
-        display: grid;
-        gap: 6px;
-        color: #2d3934;
-        font-size: 12px;
-        font-weight: 760;
-      }
-
-      input,
-      select {
-        width: 100%;
-        min-height: 40px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 0 11px;
-        color: var(--ink);
-        background: var(--field);
-        outline: none;
-        transition:
-          border-color 150ms ease,
-          box-shadow 150ms ease,
-          background 150ms ease;
-      }
-
-      input:focus,
-      select:focus {
-        border-color: rgba(31, 122, 90, 0.72);
-        background: #ffffff;
-        box-shadow: 0 0 0 3px rgba(31, 122, 90, 0.12);
-      }
-
-      .segmented {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        padding: 3px;
-        gap: 3px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: var(--quiet);
-      }
-
-      .segmented button {
-        min-height: 34px;
-        border-radius: 6px;
-        color: var(--muted);
-        background: transparent;
-        font-size: 13px;
-        font-weight: 800;
-        transition:
-          color 150ms ease,
-          background 150ms ease,
-          box-shadow 150ms ease;
-      }
-
-      .segmented button[aria-pressed="true"] {
-        color: var(--ink);
-        background: #ffffff;
-        box-shadow: 0 5px 16px rgba(17, 22, 21, 0.08);
-      }
-
-      .query-actions {
-        display: grid;
-        gap: 10px;
-        margin-top: 16px;
-      }
-
-      .window-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
-
-      .mini-button {
-        min-height: 36px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        color: #33403b;
-        background: #ffffff;
-        font-size: 12px;
-        font-weight: 760;
-        transition:
-          border-color 150ms ease,
-          transform 150ms ease,
-          background 150ms ease;
-      }
-
-      .mini-button:hover {
-        transform: translateY(-1px);
-        border-color: rgba(31, 122, 90, 0.45);
-      }
-
-      .metric-row {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
-        margin-bottom: 18px;
-      }
-
-      .metric {
-        min-height: 94px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 14px;
-        background: var(--panel);
-        box-shadow: 0 10px 34px rgba(17, 22, 21, 0.06);
-        transition: transform 180ms ease;
-      }
-
-      .metric:hover {
-        transform: translateY(-2px);
-      }
-
-      .metric span {
-        display: block;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 760;
-      }
-
-      .metric strong {
-        display: block;
-        margin-top: 8px;
-        font-size: clamp(22px, 2.6vw, 34px);
-        line-height: 1;
-        letter-spacing: 0;
-      }
-
-      .hero-surface {
-        position: relative;
-        min-height: 230px;
-        margin-bottom: 18px;
-        overflow: hidden;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background:
-          linear-gradient(135deg, rgba(31, 122, 90, 0.14), transparent 42%),
-          linear-gradient(180deg, #ffffff, #f5f8f6);
-        box-shadow: var(--shadow);
-      }
-
-      .hero-copy {
-        position: relative;
-        z-index: 2;
-        max-width: 620px;
-        padding: 28px;
-      }
-
-      .eyebrow {
-        color: var(--accent-strong);
-        font-size: 12px;
         font-weight: 850;
+        letter-spacing: 0;
         text-transform: uppercase;
-        letter-spacing: 0;
-      }
-
-      .hero-copy h2 {
-        margin-top: 10px;
-        font-size: clamp(30px, 5vw, 64px);
-        line-height: 0.95;
-        letter-spacing: 0;
-      }
-
-      .hero-copy p {
-        max-width: 500px;
-        margin-top: 14px;
-        color: var(--muted);
-        font-size: 15px;
-        line-height: 1.55;
-      }
-
-      .partition-map {
-        position: absolute;
-        right: 24px;
-        bottom: 24px;
-        display: grid;
-        width: min(460px, 48%);
-        gap: 9px;
-      }
-
-      .partition-line {
-        display: grid;
-        grid-template-columns: 72px 1fr 48px;
-        gap: 10px;
-        align-items: center;
-        color: #2e3b36;
-        font-size: 12px;
-        font-weight: 780;
-      }
-
-      .track {
-        height: 12px;
-        overflow: hidden;
-        border-radius: 999px;
-        background: #dce5df;
-      }
-
-      .track span {
-        display: block;
-        height: 100%;
-        width: var(--w);
-        border-radius: inherit;
-        background: linear-gradient(90deg, var(--accent), var(--lime));
-        animation: fillTrack 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
       }
 
       .table-wrap {
         overflow: auto;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: var(--panel);
-        box-shadow: 0 12px 36px rgba(17, 22, 21, 0.07);
       }
 
       table {
         width: 100%;
-        min-width: 860px;
+        min-width: 840px;
         border-collapse: collapse;
       }
 
       th,
       td {
-        padding: 13px 14px;
+        padding: 12px 14px;
         border-bottom: 1px solid var(--line);
         text-align: left;
         font-size: 13px;
@@ -453,11 +361,10 @@ export function demoPageHtml() {
 
       th {
         color: var(--muted);
-        background: #f8faf8;
         font-size: 11px;
         font-weight: 860;
-        text-transform: uppercase;
         letter-spacing: 0;
+        text-transform: uppercase;
       }
 
       tr:last-child td {
@@ -465,16 +372,15 @@ export function demoPageHtml() {
       }
 
       tbody tr {
-        transition:
-          background 150ms ease,
-          transform 150ms ease;
+        transition: background 140ms ease;
       }
 
       tbody tr:hover {
-        background: #f2f8f4;
+        background: #f3f8f5;
       }
 
-      .order-link {
+      .row-button,
+      .copy-id {
         color: var(--accent-strong);
         background: transparent;
         padding: 0;
@@ -482,48 +388,32 @@ export function demoPageHtml() {
         text-align: left;
       }
 
-      .chip {
+      .copy-id {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .status {
         display: inline-flex;
         min-height: 24px;
         align-items: center;
         border-radius: 999px;
         padding: 0 9px;
-        background: #e7f2ec;
         color: var(--accent-strong);
+        background: #e7f2ec;
         font-size: 12px;
         font-weight: 820;
         white-space: nowrap;
       }
 
-      .chip.refunded,
-      .chip.cancelled,
-      .chip.disputed {
-        color: var(--danger);
-        background: #fae9e7;
-      }
-
-      .chip.active {
+      .status.active {
         color: #253f9c;
         background: #e9edff;
       }
 
-      .source-note {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        color: var(--muted);
-        font-size: 13px;
-      }
-
-      .source-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 999px;
-        background: var(--amber);
-      }
-
-      .source-dot.live {
-        background: var(--accent);
+      .status.problem {
+        color: var(--danger);
+        background: #fae9e7;
       }
 
       .empty {
@@ -532,171 +422,190 @@ export function demoPageHtml() {
         text-align: center;
       }
 
-      .check-list {
+      .side-stack {
+        display: grid;
+        gap: 16px;
+        align-content: start;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 15px;
+        background: var(--panel);
+      }
+
+      .panel h2 {
+        margin-bottom: 9px;
+        font-size: 13px;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .scale-list,
+      .proof-list {
         display: grid;
         gap: 8px;
       }
 
-      .check {
+      .scale-list div,
+      .proof-list div {
         display: grid;
-        grid-template-columns: 22px 1fr;
-        gap: 10px;
-        align-items: start;
-        padding: 11px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: #ffffff;
-        transition:
-          border-color 170ms ease,
-          transform 170ms ease,
-          background 170ms ease;
-      }
-
-      .check[data-state="running"] {
-        border-color: rgba(77, 110, 219, 0.42);
-        background: #f3f5ff;
-      }
-
-      .check[data-state="pass"] {
-        border-color: rgba(31, 122, 90, 0.3);
-      }
-
-      .check[data-state="warn"] {
-        border-color: rgba(185, 106, 19, 0.32);
-      }
-
-      .check[data-state="fail"] {
-        border-color: rgba(180, 35, 24, 0.32);
-      }
-
-      .check:hover {
-        transform: translateY(-1px);
-      }
-
-      .check-mark {
-        display: grid;
-        width: 22px;
-        height: 22px;
-        place-items: center;
-        border-radius: 999px;
-        color: #ffffff;
-        background: #93a099;
-        font-size: 12px;
-        font-weight: 900;
-      }
-
-      .check[data-state="pass"] .check-mark {
-        background: var(--accent);
-      }
-
-      .check[data-state="warn"] .check-mark {
-        background: var(--amber);
-      }
-
-      .check[data-state="fail"] .check-mark {
-        background: var(--danger);
-      }
-
-      .check[data-state="running"] .check-mark {
-        background: var(--blue);
-        animation: spin 850ms linear infinite;
-      }
-
-      .check strong {
-        display: block;
+        grid-template-columns: auto 1fr;
+        gap: 8px;
+        align-items: baseline;
+        color: #36433e;
         font-size: 13px;
       }
 
-      .check span {
-        display: block;
-        margin-top: 3px;
-        color: var(--muted);
-        font-size: 12px;
-        line-height: 1.35;
-      }
-
-      .detail {
-        display: grid;
-        gap: 12px;
-        padding: 14px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: #ffffff;
-      }
-
-      .detail h3 {
+      .scale-list strong {
+        min-width: 78px;
         font-size: 17px;
       }
 
-      .detail-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
+      .proof-list strong {
+        color: var(--accent-strong);
       }
 
-      .detail-grid div {
-        min-width: 0;
-        padding: 9px;
+      details {
+        border: 1px solid var(--line);
         border-radius: 8px;
-        background: #f5f8f6;
+        background: var(--panel);
       }
 
-      .detail-grid span {
-        display: block;
+      summary {
+        cursor: pointer;
+        padding: 13px 15px;
+        color: #26332f;
+        font-size: 13px;
+        font-weight: 850;
+      }
+
+      .checks {
+        display: grid;
+        gap: 7px;
+        padding: 0 15px 15px;
+      }
+
+      .check {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        border-top: 1px solid var(--line);
+        padding-top: 8px;
         color: var(--muted);
-        font-size: 11px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0;
-      }
-
-      .detail-grid strong {
-        display: block;
-        margin-top: 4px;
-        overflow-wrap: anywhere;
         font-size: 12px;
       }
 
-      .line-items {
+      .check strong {
+        color: var(--ink);
+      }
+
+      .drawer {
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        display: none;
+      }
+
+      .drawer[aria-hidden="false"] {
+        display: block;
+      }
+
+      .drawer-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(17, 22, 21, 0.35);
+      }
+
+      .drawer-panel {
+        position: absolute;
+        top: 0;
+        right: 0;
         display: grid;
+        width: min(460px, 100vw);
+        height: 100%;
+        grid-template-rows: auto 1fr;
+        background: #ffffff;
+        box-shadow: -20px 0 70px rgba(17, 22, 21, 0.2);
+      }
+
+      .drawer-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .drawer-body {
+        overflow: auto;
+        padding: 18px;
+      }
+
+      .kv {
+        display: grid;
+        grid-template-columns: 118px 1fr;
         gap: 8px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 13px;
+      }
+
+      .kv span {
+        color: var(--muted);
       }
 
       .line-item {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 10px;
-        padding: 9px 0;
-        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
         font-size: 13px;
       }
 
-      .guardrails {
-        display: grid;
-        gap: 9px;
+      .modal {
+        border: 0;
+        border-radius: 8px;
+        padding: 0;
+        width: min(820px, calc(100vw - 36px));
+        max-height: min(720px, calc(100vh - 36px));
+        box-shadow: var(--shadow);
       }
 
-      .guardrail {
-        padding-left: 12px;
-        border-left: 3px solid var(--accent);
-        color: #35423d;
-        font-size: 13px;
-        line-height: 1.45;
+      .modal::backdrop {
+        background: rgba(17, 22, 21, 0.35);
       }
 
-      .json-view {
-        max-height: 210px;
+      .modal-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      pre {
+        max-height: 460px;
         overflow: auto;
         margin: 0;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 12px;
-        color: #25312d;
-        background: #f6f8f6;
+        padding: 16px 18px;
+        color: #26332f;
+        background: #f8faf8;
         font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
         font-size: 12px;
         line-height: 1.5;
         white-space: pre-wrap;
+      }
+
+      footer {
+        width: min(1220px, calc(100vw - 40px));
+        margin: 0 auto 24px;
+        color: var(--muted);
+        font-size: 12px;
       }
 
       @keyframes pulse {
@@ -708,234 +617,76 @@ export function demoPageHtml() {
         }
       }
 
-      @keyframes fillTrack {
-        from {
-          width: 0;
-        }
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      @media (max-width: 1180px) {
-        .workspace {
-          grid-template-columns: 260px minmax(0, 1fr);
+      @media (max-width: 920px) {
+        .topbar,
+        .lookup-row,
+        .grid {
+          grid-template-columns: 1fr;
         }
 
-        .inspector {
-          grid-column: 1 / -1;
-          border-left: 0;
-          border-top: 1px solid var(--line);
-        }
-
-        .partition-map {
-          position: relative;
-          right: auto;
-          bottom: auto;
-          width: auto;
-          padding: 0 28px 24px;
-        }
-      }
-
-      @media (max-width: 760px) {
         .topbar {
-          grid-template-columns: 1fr;
-          align-items: start;
-          padding: 16px;
+          align-items: flex-start;
         }
 
-        .status-strip {
+        .preset-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .timing-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .timing-actions {
           justify-content: flex-start;
-        }
-
-        .workspace {
-          grid-template-columns: 1fr;
-        }
-
-        .rail {
-          border-right: 0;
-          border-bottom: 1px solid var(--line);
-        }
-
-        .main,
-        .rail,
-        .inspector {
-          padding: 16px;
-        }
-
-        .metric-row {
-          grid-template-columns: 1fr 1fr;
-        }
-
-        .hero-copy {
-          padding: 22px;
-        }
-
-        .hero-copy h2 {
-          font-size: 36px;
-        }
-
-        .partition-line {
-          grid-template-columns: 56px 1fr 40px;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 1ms !important;
-          animation-iteration-count: 1 !important;
-          scroll-behavior: auto !important;
-          transition-duration: 1ms !important;
         }
       }
     </style>
   </head>
   <body>
-    <div class="shell">
+    <div class="app">
       <header class="topbar">
         <div class="brand">
           <div class="mark">OH</div>
           <div>
             <h1>Order History Console</h1>
-            <p class="subtitle">Scoped lookup, partition-aware reads, and demo-safe smoke checks.</p>
+            <p class="subtle">Speed-first demo for scoped historical lookup at 10M orders/week.</p>
           </div>
         </div>
-        <div class="status-strip" aria-live="polite">
-          <span class="pulse" aria-hidden="true"></span>
-          <span id="serviceStatus">Checking service</span>
-        </div>
-        <button class="primary-action" id="runChecksTop" type="button">Run checks</button>
+        <div class="contract-badge"><span class="dot" aria-hidden="true"></span><span id="contractState">contract proven</span></div>
       </header>
 
-      <div class="workspace">
-        <aside class="rail">
-          <section class="section">
-            <div class="section-title">
-              <h2>Principal</h2>
-              <span class="hint">Header-scoped</span>
-            </div>
-            <div class="segmented" aria-label="Actor type">
-              <button type="button" data-actor="customer" aria-pressed="true">Customer</button>
-              <button type="button" data-actor="store" aria-pressed="false">Store</button>
-            </div>
-          </section>
+      <main>
+        <section class="lookup-panel" aria-labelledby="lookupTitle">
+          <div class="lookup-heading">
+            <h2 id="lookupTitle">Look up history without scanning all orders.</h2>
+            <p>Paste a seeded customer ID or UUIDv7 order ID, or run a preset that demonstrates scope, latency, partition pruning, cursor paging, and guardrails.</p>
+          </div>
 
-          <section class="section">
-            <div class="section-title">
-              <h2>Query</h2>
-              <span class="hint">No unbounded reads</span>
-            </div>
-            <div class="field-stack">
-              <label>
-                Customer ID
-                <input id="customerId" value="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa" spellcheck="false" />
-              </label>
-              <label>
-                Store scope
-                <input id="storeIds" value="11111111-1111-4111-8111-111111111111" spellcheck="false" />
-              </label>
-              <label>
-                Store filter
-                <input id="storeFilter" value="11111111-1111-4111-8111-111111111111" spellcheck="false" />
-              </label>
-              <label>
-                Status
-                <select id="statusFilter">
-                  <option value="">Any status</option>
-                  <option value="delivered">Delivered</option>
-                  <option value="out_for_delivery">Out for delivery</option>
-                  <option value="refunded">Refunded</option>
-                </select>
-              </label>
-              <label>
-                Limit
-                <select id="limit">
-                  <option value="2">2</option>
-                  <option value="5" selected>5</option>
-                  <option value="10">10</option>
-                </select>
-              </label>
-            </div>
-          </section>
+          <div class="lookup-row">
+            <input class="lookup-input" id="lookupInput" spellcheck="false" value="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa" aria-label="Lookup ID" />
+            <button class="primary" id="lookupButton" type="button">Look up</button>
+          </div>
 
-          <section class="section">
-            <div class="section-title">
-              <h2>Date window</h2>
-            </div>
-            <div class="window-grid">
-              <button class="mini-button" type="button" data-window="latest">Latest 90d</button>
-              <button class="mini-button" type="button" data-window="may">May 2026</button>
-              <button class="mini-button" type="button" data-window="spring">Apr-May</button>
-              <button class="mini-button" type="button" data-window="wide">Too wide</button>
-            </div>
-            <div class="query-actions">
-              <button class="primary-action" id="runQuery" type="button">Run API query</button>
-              <button class="secondary-action" id="useSample" type="button">Use sample data</button>
-            </div>
-          </section>
-        </aside>
+          <div class="preset-grid" id="presetGrid" aria-label="Demo presets"></div>
+        </section>
 
-        <main class="main">
-          <section class="hero-surface" aria-labelledby="demoHeading">
-            <div class="hero-copy">
-              <p class="eyebrow">MVP lookup contract</p>
-              <h2 id="demoHeading">Find the right order without scanning the world.</h2>
-              <p>
-                The demo shows customer and store-scoped history, bounded windows,
-                keyset pagination, UUIDv7 detail routing, and the deferred paths
-                called out in the spec.
-              </p>
-            </div>
-            <div class="partition-map" aria-label="Partition activity">
-              <div class="partition-line">
-                <span>Apr 2026</span>
-                <div class="track"><span style="--w: 42%"></span></div>
-                <span>cold</span>
-              </div>
-              <div class="partition-line">
-                <span>May 2026</span>
-                <div class="track"><span style="--w: 86%"></span></div>
-                <span>hot</span>
-              </div>
-              <div class="partition-line">
-                <span>Jun 2026</span>
-                <div class="track"><span style="--w: 18%"></span></div>
-                <span>next</span>
-              </div>
-            </div>
-          </section>
+        <section class="timing-strip" aria-live="polite">
+          <div>
+            <div class="timing-primary" id="timingPrimary"></div>
+            <div class="timing-detail" id="timingDetail">Run a preset to measure lookup time.</div>
+          </div>
+          <div class="timing-actions">
+            <button id="requestButton" type="button">Show request</button>
+            <button id="curlButton" type="button">Copy as curl</button>
+            <button id="explainButton" type="button">Explain plan</button>
+          </div>
+        </section>
 
-          <section class="metric-row" aria-label="Demo metrics">
-            <div class="metric">
-              <span>Orders shown</span>
-              <strong id="metricOrders">0</strong>
-            </div>
-            <div class="metric">
-              <span>Total value</span>
-              <strong id="metricValue">$0</strong>
-            </div>
-            <div class="metric">
-              <span>Window</span>
-              <strong id="metricWindow">90d</strong>
-            </div>
-            <div class="metric">
-              <span>Next cursor</span>
-              <strong id="metricCursor">No</strong>
-            </div>
-          </section>
-
-          <section>
-            <div class="section-title">
-              <h2>Results</h2>
-              <div class="source-note">
-                <span class="source-dot" id="sourceDot"></span>
-                <span id="sourceLabel">Presentation sample</span>
-              </div>
+        <div class="grid">
+          <section class="surface" aria-labelledby="resultsTitle">
+            <div class="surface-head">
+              <h2 id="resultsTitle">Results</h2>
+              <span class="subtle" id="resultSource">Live API</span>
             </div>
             <div class="table-wrap">
               <table>
@@ -943,444 +694,689 @@ export function demoPageHtml() {
                   <tr>
                     <th>Order</th>
                     <th>Created</th>
-                    <th>Actor scope</th>
+                    <th>Customer</th>
                     <th>Store</th>
+                    <th>Delivery</th>
                     <th>Status</th>
                     <th>Total</th>
                   </tr>
                 </thead>
                 <tbody id="ordersBody"></tbody>
               </table>
-              <div class="empty" id="emptyState" hidden>No rows for this query.</div>
-            </div>
-          </section>
-        </main>
-
-        <aside class="inspector">
-          <section class="section">
-            <div class="section-title">
-              <h2>Live checks</h2>
-              <span class="hint" id="lastChecked">Not run</span>
-            </div>
-            <div class="check-list" id="checkList">
-              <div class="check" data-check="health" data-state="idle">
-                <span class="check-mark">-</span>
-                <div><strong>Health endpoint</strong><span>/health returns 200.</span></div>
-              </div>
-              <div class="check" data-check="auth" data-state="idle">
-                <span class="check-mark">-</span>
-                <div><strong>Auth boundary</strong><span>Unauthenticated history returns 401.</span></div>
-              </div>
-              <div class="check" data-check="scoped" data-state="idle">
-                <span class="check-mark">-</span>
-                <div><strong>Scoped history</strong><span>Customer or store headers return a bounded page.</span></div>
-              </div>
-              <div class="check" data-check="guard" data-state="idle">
-                <span class="check-mark">-</span>
-                <div><strong>Date guard</strong><span>One-sided windows are rejected.</span></div>
-              </div>
-              <div class="check" data-check="item" data-state="idle">
-                <span class="check-mark">-</span>
-                <div><strong>Deferred item search</strong><span>item_id filter returns 501 for MVP.</span></div>
-              </div>
-              <div class="check" data-check="cursor" data-state="idle">
-                <span class="check-mark">-</span>
-                <div><strong>Keyset pagination</strong><span>Cursor advances without OFFSET.</span></div>
-              </div>
+              <div class="empty" id="emptyState">Run a preset to load live order history.</div>
             </div>
           </section>
 
-          <section class="section">
-            <div class="section-title">
-              <h2>Selected order</h2>
-            </div>
-            <div class="detail" id="detailPanel"></div>
-          </section>
+          <aside class="side-stack">
+            <section class="panel">
+              <h2>Scale math</h2>
+              <div class="scale-list">
+                <div><strong>10M/wk</strong><span>baseline order volume</span></div>
+                <div><strong>16.5/s</strong><span>average ingest rate</span></div>
+                <div><strong>45k</strong><span>active orders at 45 min</span></div>
+                <div><strong>129M</strong><span>orders online at 90 days</span></div>
+                <div><strong>480 GB</strong><span>estimated 90-day hot storage</span></div>
+              </div>
+            </section>
 
-          <section class="section">
-            <div class="section-title">
-              <h2>Spec guardrails</h2>
-            </div>
-            <div class="guardrails">
-              <p class="guardrail">Actor scope comes from headers, not request body fields.</p>
-              <p class="guardrail">Every list read uses a bounded recent or explicit time window.</p>
-              <p class="guardrail">Pagination uses created_at plus order_id keysets, never OFFSET.</p>
-              <p class="guardrail">Address and payment values stay tokenized references.</p>
-              <p class="guardrail">Support, courier, and item search paths remain deferred.</p>
-            </div>
-          </section>
+            <section class="panel">
+              <h2>Lookup bound</h2>
+              <div class="proof-list">
+                <div><strong>1</strong><span>actor scope from auth headers</span></div>
+                <div><strong>2</strong><span>bounded date window</span></div>
+                <div><strong>3</strong><span>monthly partition pruning</span></div>
+                <div><strong>4</strong><span>composite history index</span></div>
+                <div><strong>5</strong><span>keyset cursor, no OFFSET</span></div>
+              </div>
+            </section>
 
-          <section class="section">
-            <div class="section-title">
-              <h2>Last response</h2>
-            </div>
-            <pre class="json-view" id="responseView">{}</pre>
-          </section>
-        </aside>
+            <details id="guardrailDetails">
+              <summary>Guardrails: auth - scope - date - deferred</summary>
+              <div class="checks" id="checksList"></div>
+            </details>
+          </aside>
+        </div>
+      </main>
+
+      <footer>
+        Proof posture: access contract is implemented and timed on seeded data; 100M-row p95/p99 benchmark remains a separate benchmark.
+      </footer>
+    </div>
+
+    <div class="drawer" id="drawer" aria-hidden="true">
+      <div class="drawer-backdrop" id="drawerBackdrop"></div>
+      <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+        <div class="drawer-head">
+          <div>
+            <h2 id="drawerTitle">Order detail</h2>
+            <p class="subtle" id="drawerSubtitle">UUIDv7 month-routed lookup</p>
+          </div>
+          <button class="ghost" id="drawerClose" type="button">Close</button>
+        </div>
+        <div class="drawer-body" id="drawerBody"></div>
       </div>
     </div>
 
+    <dialog class="modal" id="infoModal">
+      <div class="modal-head">
+        <div>
+          <h2 id="modalTitle">Request</h2>
+          <p class="subtle" id="modalSubtitle">Same request used by the live demo.</p>
+        </div>
+        <button class="ghost" id="modalClose" type="button">Close</button>
+      </div>
+      <pre id="modalBody"></pre>
+    </dialog>
+
     <script>
-      const SEEDED_CUSTOMER = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
-      const SEEDED_STORE = "11111111-1111-4111-8111-111111111111";
-      const SEEDED_STORE_2 = "22222222-2222-4222-8222-222222222222";
-      const SAMPLE_ROWS = [
+      const IDS = {
+        ava: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        mia: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        nori: "11111111-1111-4111-8111-111111111111",
+        bean: "22222222-2222-4222-8222-222222222222",
+        item: "77777777-7777-4777-8777-777777777777"
+      };
+
+      const PEOPLE = {
+        [IDS.ava]: "Ava Chen",
+        [IDS.mia]: "Mia Park"
+      };
+
+      const STORES = {
+        [IDS.nori]: "Nori Thai - Midtown",
+        [IDS.bean]: "Bean & Batch"
+      };
+
+      const PRESETS = [
         {
-          orderId: "0196d0f3-bd40-7000-8000-000000000101",
-          createdAt: "2026-05-15T18:30:00.000Z",
-          userId: SEEDED_CUSTOMER,
-          storeId: SEEDED_STORE,
-          deliveryPersonId: "77777777-7777-4777-8777-777777777777",
-          status: "delivered",
-          totalCents: 1450,
-          currency: "USD",
-          shipAddressRef: "addr_tok_customer_a_1",
-          paymentTokenRef: "pay_tok_visa_4242",
-          items: [{ lineNo: 1, nameSnapshot: "Pad Thai", quantity: 1, priceCents: 1450, currency: "USD" }]
+          id: "ava-may",
+          label: "Ava Chen - May orders",
+          help: "Customer-scoped history + bounded window",
+          request: () => listRequest({
+            headers: customerHeaders(IDS.ava),
+            params: { from: "2026-05-01T00:00:00.000Z", to: "2026-06-01T00:00:00.000Z", limit: "8" }
+          })
         },
         {
-          orderId: "0196c0fb-8a20-7000-8000-000000000102",
-          createdAt: "2026-05-12T12:05:00.000Z",
-          userId: SEEDED_CUSTOMER,
-          storeId: SEEDED_STORE,
-          deliveryPersonId: null,
-          status: "delivered",
-          totalCents: 3200,
-          currency: "USD",
-          shipAddressRef: "addr_tok_customer_a_2",
-          paymentTokenRef: "pay_tok_visa_4242",
-          items: [{ lineNo: 1, nameSnapshot: "Green Curry", quantity: 2, priceCents: 1600, currency: "USD" }]
+          id: "nori-store",
+          label: "Nori Thai - Midtown",
+          help: "Store-scoped cross-customer lookup",
+          request: () => listRequest({ headers: storeHeaders(IDS.nori), params: { limit: "8" } })
         },
         {
-          orderId: "0196b161-7300-7000-8000-000000000103",
-          createdAt: "2026-05-10T13:20:00.000Z",
-          userId: SEEDED_CUSTOMER,
-          storeId: SEEDED_STORE_2,
-          deliveryPersonId: null,
-          status: "delivered",
-          totalCents: 1100,
-          currency: "USD",
-          shipAddressRef: "addr_tok_customer_a_3",
-          paymentTokenRef: "pay_tok_amex_1001",
-          items: [{ lineNo: 1, nameSnapshot: "Latte", quantity: 2, priceCents: 550, currency: "USD" }]
+          id: "active-store",
+          label: "Active store orders",
+          help: "Partial active-status index path",
+          request: () => listRequest({ headers: storeHeaders(IDS.nori), params: { status: "out_for_delivery", limit: "8" } })
         },
         {
-          orderId: "0196ab8b-4a80-7000-8000-000000000104",
-          createdAt: "2026-05-08T20:10:00.000Z",
-          userId: SEEDED_CUSTOMER,
-          storeId: SEEDED_STORE,
-          deliveryPersonId: "77777777-7777-4777-8777-777777777777",
-          status: "refunded",
-          totalCents: 1800,
-          currency: "USD",
-          shipAddressRef: "addr_tok_customer_a_4",
-          paymentTokenRef: "pay_tok_refund_3002",
-          items: [{ lineNo: 1, nameSnapshot: "Spring Roll", quantity: 3, priceCents: 600, currency: "USD" }]
+          id: "cross-store",
+          label: "Cross-store denied",
+          help: "Store A cannot query Store B",
+          request: () => listRequest({ headers: storeHeaders(IDS.nori), params: { store_id: IDS.bean, limit: "8" } })
         },
         {
-          orderId: "01964f41-5e00-7000-8000-000000000105",
-          createdAt: "2026-04-22T19:00:00.000Z",
-          userId: SEEDED_CUSTOMER,
-          storeId: SEEDED_STORE,
-          deliveryPersonId: null,
-          status: "delivered",
-          totalCents: 900,
-          currency: "USD",
-          shipAddressRef: "addr_tok_customer_a_5",
-          paymentTokenRef: "pay_tok_master_0007",
-          items: [{ lineNo: 1, nameSnapshot: "Mango Sticky Rice", quantity: 1, priceCents: 900, currency: "USD" }]
+          id: "wide-window",
+          label: "Window too wide",
+          help: "Oversized reads fail fast",
+          request: () => listRequest({
+            headers: customerHeaders(IDS.ava),
+            params: { from: "2025-01-01T00:00:00.000Z", to: "2026-06-01T00:00:00.000Z", limit: "8" }
+          })
+        },
+        {
+          id: "item-search",
+          label: "Item search deferred",
+          help: "MVP stores items; search index later",
+          request: () => listRequest({ headers: customerHeaders(IDS.ava), params: { item_id: IDS.item, limit: "8" } })
+        },
+        {
+          id: "page-2",
+          label: "Pagination - page 2",
+          help: "Keyset cursor, no OFFSET",
+          run: runPageTwoPreset
+        },
+        {
+          id: "direct",
+          label: "Direct order lookup",
+          help: "UUIDv7 routes to month partition",
+          run: runDirectPreset
         }
       ];
 
       const state = {
-        actor: "customer",
-        selectedWindow: "latest",
+        activePreset: "",
         rows: [],
-        source: "sample",
-        page: { nextCursor: null, limit: 5 },
-        selectedOrder: SAMPLE_ROWS[0]
+        selectedOrder: null,
+        lastRequest: null,
+        lastListRequest: null,
+        lastResponse: null,
+        lastTiming: null,
+        checks: []
       };
 
       const $ = (id) => document.getElementById(id);
-      const currency = (cents) => "$" + (cents / 100).toFixed(2);
+      const money = (cents) => "$" + (Number(cents || 0) / 100).toFixed(2);
       const shortId = (value) => value ? value.slice(0, 8) + "..." + value.slice(-4) : "None";
-      const fmtDate = (value) => new Intl.DateTimeFormat("en", {
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit"
-      }).format(new Date(value));
+      const uuidV7 = (value) => /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+      const uuid = (value) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 
-      function headersForQuery() {
-        if (state.actor === "customer") {
-          return {
-            "x-actor-type": "customer",
-            "x-user-id": $("customerId").value.trim()
-          };
-        }
-
-        return {
-          "x-actor-type": "store",
-          "x-store-ids": $("storeIds").value.trim()
-        };
+      function customerHeaders(userId) {
+        return { "x-actor-type": "customer", "x-user-id": userId };
       }
 
-      function queryParams(extra) {
-        const params = new URLSearchParams();
-        const status = $("statusFilter").value;
-        const storeFilter = $("storeFilter").value.trim();
-        params.set("limit", $("limit").value);
-
-        if (status) {
-          params.set("status", status);
-        }
-
-        if (storeFilter) {
-          params.set("store_id", storeFilter);
-        }
-
-        if (state.selectedWindow === "may") {
-          params.set("from", "2026-05-01T00:00:00.000Z");
-          params.set("to", "2026-06-01T00:00:00.000Z");
-        }
-
-        if (state.selectedWindow === "spring") {
-          params.set("from", "2026-04-01T00:00:00.000Z");
-          params.set("to", "2026-06-01T00:00:00.000Z");
-        }
-
-        if (state.selectedWindow === "wide") {
-          params.set("from", "2025-01-01T00:00:00.000Z");
-          params.set("to", "2026-06-01T00:00:00.000Z");
-        }
-
-        if (extra) {
-          Object.entries(extra).forEach(([key, value]) => {
-            if (value) {
-              params.set(key, value);
-            }
-          });
-        }
-
-        return params;
+      function storeHeaders(storeId) {
+        return { "x-actor-type": "store", "x-store-ids": storeId };
       }
 
-      async function api(path, options) {
-        const response = await fetch(path, options || {});
-        let body = null;
+      function listRequest({ headers, params }) {
+        return { method: "GET", path: "/v1/orders", headers, params: params || {} };
+      }
+
+      function detailRequest(orderId, headers) {
+        return { method: "GET", path: "/v1/orders/" + encodeURIComponent(orderId), headers, params: {} };
+      }
+
+      function requestUrl(request, extraParams) {
+        const params = new URLSearchParams(request.params || {});
+        if (extraParams) {
+          Object.entries(extraParams).forEach(([key, value]) => params.set(key, value));
+        }
+        const query = params.toString();
+        return request.path + (query ? "?" + query : "");
+      }
+
+      function externalUrl(request, extraParams) {
+        return window.location.origin + requestUrl(request, extraParams);
+      }
+
+      function parseServerTiming(header) {
+        const timing = {};
+        if (!header) return timing;
+        header.split(",").forEach((part) => {
+          const [name, ...attrs] = part.trim().split(";");
+          const durAttr = attrs.find((attr) => attr.trim().startsWith("dur="));
+          if (name && durAttr) timing[name.trim()] = Number(durAttr.split("=")[1]);
+        });
+        return timing;
+      }
+
+      async function api(request, extraParams) {
+        const startedAt = performance.now();
+        const response = await fetch(requestUrl(request, extraParams), { headers: request.headers });
+        const rttMs = Math.round((performance.now() - startedAt) * 100) / 100;
+        let body = {};
         try {
           body = await response.json();
         } catch {
           body = {};
         }
-        return { status: response.status, ok: response.ok, body };
+        return {
+          status: response.status,
+          ok: response.ok,
+          body,
+          rttMs,
+          serverTiming: parseServerTiming(response.headers.get("Server-Timing"))
+        };
       }
 
-      function sampleRows() {
-        const status = $("statusFilter").value;
-        const storeFilter = $("storeFilter").value.trim();
-        let rows = SAMPLE_ROWS.slice();
-
-        if (state.actor === "store") {
-          const storeScope = $("storeIds").value.split(",").map((value) => value.trim());
-          rows = rows.filter((row) => storeScope.includes(row.storeId));
-        } else {
-          rows = rows.filter((row) => row.userId === $("customerId").value.trim());
+      async function runRequest(request, options) {
+        const opts = options || {};
+        setBusy(true);
+        state.lastRequest = request;
+        if (request.path === "/v1/orders" && !opts.skipListMemory) state.lastListRequest = request;
+        try {
+          const result = await api(request);
+          state.lastResponse = result;
+          state.lastTiming = timingFrom(result);
+          if (result.ok && Array.isArray(result.body.data)) {
+            state.rows = result.body.data;
+            state.selectedOrder = result.body.data[0] || null;
+          } else if (result.ok && result.body.data) {
+            state.rows = [result.body.data];
+            state.selectedOrder = result.body.data;
+          } else {
+            state.rows = [];
+            state.selectedOrder = null;
+          }
+          renderAll();
+          if (result.ok && state.selectedOrder && request.path === "/v1/orders") {
+            await loadDetail(state.selectedOrder.orderId, request.headers, { quiet: true });
+          }
+        } catch (error) {
+          state.lastResponse = { status: "network", ok: false, body: { error: String(error) }, rttMs: 0, serverTiming: {} };
+          state.rows = [];
+          state.selectedOrder = null;
+          renderAll();
+        } finally {
+          setBusy(false);
         }
-
-        if (storeFilter) {
-          rows = rows.filter((row) => row.storeId === storeFilter);
-        }
-
-        if (status) {
-          rows = rows.filter((row) => row.status === status);
-        }
-
-        if (state.selectedWindow === "may") {
-          rows = rows.filter((row) => row.createdAt >= "2026-05-01" && row.createdAt < "2026-06-01");
-        }
-
-        if (state.selectedWindow === "spring") {
-          rows = rows.filter((row) => row.createdAt >= "2026-04-01" && row.createdAt < "2026-06-01");
-        }
-
-        if (state.selectedWindow === "wide") {
-          rows = [];
-        }
-
-        return rows.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       }
 
-      function statusClass(status) {
-        if (["placed", "confirmed", "preparing", "picked_up", "out_for_delivery"].includes(status)) {
-          return "chip active";
+      function timingFrom(result) {
+        const meta = result.body && result.body.meta ? result.body.meta : {};
+        return {
+          status: result.status,
+          rows: Array.isArray(result.body.data) ? result.body.data.length : result.body.data ? 1 : 0,
+          dbMs: typeof meta.lookupMs === "number" ? meta.lookupMs : result.serverTiming.db,
+          appMs: result.serverTiming.app,
+          rttMs: result.rttMs,
+          cursor: Boolean(result.body.page && result.body.page.nextCursor),
+          partitionWindow: meta.partitionWindow || null
+        };
+      }
+
+      function setBusy(isBusy) {
+        $("lookupButton").textContent = isBusy ? "Looking..." : "Look up";
+        $("lookupButton").disabled = isBusy;
+      }
+
+      function renderPresets() {
+        const grid = $("presetGrid");
+        grid.replaceChildren();
+        PRESETS.forEach((preset) => {
+          const button = document.createElement("button");
+          button.className = "chip";
+          button.type = "button";
+          button.dataset.active = String(state.activePreset === preset.id);
+          button.dataset.preset = preset.id;
+          button.append(document.createTextNode(preset.label));
+          button.title = preset.help;
+          grid.append(button);
+        });
+      }
+
+      function renderTiming() {
+        const primary = $("timingPrimary");
+        primary.replaceChildren();
+        const timing = state.lastTiming;
+        if (!timing) {
+          addTimingPill("Ready", "ok");
+          $("timingDetail").textContent = "Pick a preset or paste an ID to run a live lookup.";
+          return;
         }
-        if (["refunded", "cancelled", "disputed"].includes(status)) {
-          return "chip " + status;
+        const ok = Number(timing.status) >= 200 && Number(timing.status) < 300;
+        addTimingPill(String(timing.status), ok ? "ok" : "fail");
+        addTimingPill(timing.rows + " rows");
+        addTimingPill("DB " + formatMs(timing.dbMs));
+        addTimingPill("API " + formatMs(timing.appMs));
+        addTimingPill("RTT " + formatMs(timing.rttMs));
+        addTimingPill("cursor: " + (timing.cursor ? "yes" : "no"));
+
+        const window = timing.partitionWindow;
+        $("timingDetail").textContent = window
+          ? "Partition window " + window.from.slice(0, 10) + " -> " + window.to.slice(0, 10) + " (" + window.monthsSpanned + " month" + (window.monthsSpanned === 1 ? "" : "s") + "). DB time is separated from Render/network round trip."
+          : "DB time is shown when the endpoint returns lookup metadata. Render/network time is the browser RTT.";
+
+        function addTimingPill(text, tone) {
+          const pill = document.createElement("span");
+          if (tone) pill.className = tone;
+          pill.textContent = text;
+          primary.append(pill);
         }
-        return "chip";
+      }
+
+      function formatMs(value) {
+        return typeof value === "number" && Number.isFinite(value) ? value.toFixed(value < 10 ? 2 : 1) + "ms" : "-";
       }
 
       function renderRows() {
-        const rows = state.rows;
-        $("ordersBody").innerHTML = rows.map((order) => {
-          return "<tr>" +
-            "<td><button class=\"order-link\" type=\"button\" data-order-id=\"" + order.orderId + "\">" + shortId(order.orderId) + "</button></td>" +
-            "<td>" + fmtDate(order.createdAt) + "</td>" +
-            "<td>" + shortId(order.userId) + "</td>" +
-            "<td>" + shortId(order.storeId) + "</td>" +
-            "<td><span class=\"" + statusClass(order.status) + "\">" + order.status.replaceAll("_", " ") + "</span></td>" +
-            "<td>" + currency(order.totalCents) + "</td>" +
-          "</tr>";
-        }).join("");
-
-        $("emptyState").hidden = rows.length > 0;
-        $("metricOrders").textContent = String(rows.length);
-        $("metricValue").textContent = currency(rows.reduce((sum, row) => sum + Number(row.totalCents || 0), 0));
-        $("metricWindow").textContent = state.selectedWindow === "latest" ? "90d" : state.selectedWindow;
-        $("metricCursor").textContent = state.page.nextCursor ? "Yes" : "No";
-        $("sourceLabel").textContent = state.source === "live" ? "Live API data" : "Presentation sample";
-        $("sourceDot").className = "source-dot" + (state.source === "live" ? " live" : "");
-
-        document.querySelectorAll("[data-order-id]").forEach((button) => {
-          button.addEventListener("click", () => selectOrder(button.dataset.orderId));
+        const body = $("ordersBody");
+        body.replaceChildren();
+        state.rows.forEach((order) => {
+          const row = document.createElement("tr");
+          row.append(
+            cellWithOrder(order),
+            textCell(formatDate(order.createdAt)),
+            textCell(nameFor(PEOPLE, order.userId)),
+            textCell(nameFor(STORES, order.storeId)),
+            textCell(order.deliveryPersonId ? shortId(order.deliveryPersonId) : "None"),
+            statusCell(order.status),
+            textCell(money(order.totalCents))
+          );
+          body.append(row);
         });
-
-        if (rows[0] && (!state.selectedOrder || !rows.some((row) => row.orderId === state.selectedOrder.orderId))) {
-          state.selectedOrder = rows[0];
-        }
-        renderDetail();
+        $("emptyState").style.display = state.rows.length ? "none" : "block";
+        $("emptyState").textContent = emptyMessage();
       }
 
-      async function selectOrder(orderId) {
-        const existing = state.rows.find((row) => row.orderId === orderId) || SAMPLE_ROWS.find((row) => row.orderId === orderId);
-        state.selectedOrder = existing;
+      function cellWithOrder(order) {
+        const td = document.createElement("td");
+        const open = document.createElement("button");
+        open.className = "row-button";
+        open.type = "button";
+        open.textContent = shortId(order.orderId);
+        open.addEventListener("click", () => openOrder(order));
+        const copy = document.createElement("button");
+        copy.className = "copy-id";
+        copy.type = "button";
+        copy.textContent = " copy";
+        copy.title = "Copy order ID";
+        copy.addEventListener("click", (event) => {
+          event.stopPropagation();
+          copyText(order.orderId, copy);
+        });
+        td.append(open, copy);
+        return td;
+      }
 
-        if (state.source === "live") {
-          const result = await api("/v1/orders/" + encodeURIComponent(orderId), { headers: headersForQuery() });
-          $("responseView").textContent = JSON.stringify(result.body, null, 2);
-          if (result.ok && result.body.data) {
-            state.selectedOrder = result.body.data;
+      function textCell(text) {
+        const td = document.createElement("td");
+        td.textContent = text;
+        return td;
+      }
+
+      function statusCell(status) {
+        const td = document.createElement("td");
+        const span = document.createElement("span");
+        span.className = "status";
+        if (["placed", "confirmed", "preparing", "picked_up", "out_for_delivery"].includes(status)) span.classList.add("active");
+        if (["refunded", "cancelled", "disputed"].includes(status)) span.classList.add("problem");
+        span.textContent = status.replaceAll("_", " ");
+        td.append(span);
+        return td;
+      }
+
+      function emptyMessage() {
+        const response = state.lastResponse;
+        if (!response) return "Run a preset to load live order history.";
+        if (response.ok) return "Live API returned 0 rows. No sample fallback is being shown.";
+        return "Live API returned " + response.status + ": " + ((response.body && response.body.error) || "request failed");
+      }
+
+      function formatDate(value) {
+        return new Intl.DateTimeFormat("en", {
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+        }).format(new Date(value));
+      }
+
+      function nameFor(map, id) {
+        return map[id] || shortId(id);
+      }
+
+      function renderChecks() {
+        const list = $("checksList");
+        list.replaceChildren();
+        const checks = state.checks.length ? state.checks : [
+          { label: "auth", value: "not run" },
+          { label: "scope", value: "not run" },
+          { label: "date", value: "not run" },
+          { label: "deferred", value: "not run" }
+        ];
+        $("guardrailDetails").querySelector("summary").textContent =
+          "Guardrails: " + checks.map((check) => check.label + " " + check.value).join(" - ");
+        checks.forEach((check) => {
+          const row = document.createElement("div");
+          row.className = "check";
+          const label = document.createElement("strong");
+          label.textContent = check.label;
+          const value = document.createElement("span");
+          value.textContent = check.detail || check.value;
+          row.append(label, value);
+          list.append(row);
+        });
+      }
+
+      function renderAll() {
+        renderPresets();
+        renderTiming();
+        renderRows();
+        renderChecks();
+        $("resultSource").textContent = state.lastResponse ? "Live API - no sample swap" : "Live API";
+      }
+
+      async function openOrder(order) {
+        await loadDetail(order.orderId, state.lastRequest ? state.lastRequest.headers : customerHeaders(IDS.ava), { quiet: false });
+        openDrawer();
+      }
+
+      async function loadDetail(orderId, headers, options) {
+        const result = await api(detailRequest(orderId, headers));
+        if (result.ok && result.body.data) {
+          state.selectedOrder = result.body.data;
+          if (!options || !options.quiet) {
+            state.lastRequest = detailRequest(orderId, headers);
+            state.lastResponse = result;
+            state.lastTiming = timingFrom(result);
+            renderAll();
+          }
+          renderDrawer();
+        }
+      }
+
+      function renderDrawer() {
+        const order = state.selectedOrder;
+        const body = $("drawerBody");
+        body.replaceChildren();
+        if (!order) {
+          body.textContent = "No order selected.";
+          return;
+        }
+        [
+          ["Order ID", order.orderId],
+          ["Created", formatDate(order.createdAt)],
+          ["Customer", nameFor(PEOPLE, order.userId)],
+          ["Store", nameFor(STORES, order.storeId)],
+          ["Delivery", order.deliveryPersonId ? shortId(order.deliveryPersonId) : "None"],
+          ["Status", order.status.replaceAll("_", " ")],
+          ["Total", money(order.totalCents)],
+          ["Address ref", order.shipAddressRef || "tokenized ref"],
+          ["Payment ref", order.paymentTokenRef || "tokenized ref"]
+        ].forEach(([label, value]) => {
+          const row = document.createElement("div");
+          row.className = "kv";
+          const key = document.createElement("span");
+          key.textContent = label;
+          const val = document.createElement("strong");
+          val.textContent = value;
+          row.append(key, val);
+          body.append(row);
+        });
+        const title = document.createElement("h2");
+        title.textContent = "Line items";
+        title.style.margin = "18px 0 4px";
+        body.append(title);
+        (order.items || []).forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "line-item";
+          const left = document.createElement("span");
+          left.textContent = item.quantity + " x " + item.nameSnapshot;
+          const right = document.createElement("strong");
+          right.textContent = money(item.quantity * item.priceCents);
+          row.append(left, right);
+          body.append(row);
+        });
+      }
+
+      function openDrawer() {
+        $("drawer").setAttribute("aria-hidden", "false");
+      }
+
+      function closeDrawer() {
+        $("drawer").setAttribute("aria-hidden", "true");
+      }
+
+      async function runPreset(id) {
+        const preset = PRESETS.find((entry) => entry.id === id);
+        if (!preset) return;
+        state.activePreset = id;
+        history.replaceState(null, "", "?preset=" + encodeURIComponent(id));
+        if (preset.run) {
+          await preset.run();
+        } else {
+          await runRequest(preset.request());
+        }
+      }
+
+      async function runPageTwoPreset() {
+        const base = PRESETS.find((preset) => preset.id === "ava-may").request();
+        const first = await api(base);
+        const cursor = first.body && first.body.page && first.body.page.nextCursor;
+        if (!cursor) {
+          state.lastRequest = base;
+          state.lastResponse = first;
+          state.lastTiming = timingFrom(first);
+          state.rows = first.body.data || [];
+          renderAll();
+          return;
+        }
+        await runRequest({ ...base, params: { ...base.params, cursor } });
+      }
+
+      async function runDirectPreset() {
+        let orderId = state.selectedOrder && state.selectedOrder.orderId;
+        if (!orderId) {
+          const base = PRESETS.find((preset) => preset.id === "ava-may").request();
+          const first = await api(base);
+          orderId = first.body.data && first.body.data[0] && first.body.data[0].orderId;
+        }
+        if (orderId) {
+          $("lookupInput").value = orderId;
+          await runRequest(detailRequest(orderId, customerHeaders(IDS.ava)));
+          openDrawer();
+        }
+      }
+
+      async function runLookupInput() {
+        const value = $("lookupInput").value.trim();
+        state.activePreset = "";
+        history.replaceState(null, "", window.location.pathname);
+        if (uuidV7(value)) {
+          const headers = state.lastRequest ? state.lastRequest.headers : customerHeaders(IDS.ava);
+          await runRequest(detailRequest(value, headers));
+          openDrawer();
+        } else if (uuid(value)) {
+          await runRequest(listRequest({ headers: customerHeaders(value), params: { limit: "8" } }));
+        } else {
+          state.lastResponse = { status: "input", ok: false, body: { error: "Paste a UUID customer ID or UUIDv7 order ID." }, rttMs: 0, serverTiming: {} };
+          state.rows = [];
+          state.lastTiming = null;
+          renderAll();
+        }
+      }
+
+      async function runGuardrails() {
+        const auth = await api(listRequest({ headers: {}, params: {} }));
+        const scope = await api(PRESETS.find((preset) => preset.id === "cross-store").request());
+        const date = await api(listRequest({ headers: customerHeaders(IDS.ava), params: { from: "2026-05-01T00:00:00.000Z", limit: "8" } }));
+        const deferred = await api(PRESETS.find((preset) => preset.id === "item-search").request());
+        state.checks = [
+          { label: "auth", value: auth.status === 401 ? "ok" : "fail", detail: "unauthenticated read returned " + auth.status },
+          { label: "scope", value: scope.status === 403 ? "ok" : "fail", detail: "cross-store read returned " + scope.status },
+          { label: "date", value: date.status === 400 ? "ok" : "fail", detail: "one-sided date returned " + date.status },
+          { label: "deferred", value: deferred.status === 501 ? "ok" : "fail", detail: "item search returned " + deferred.status }
+        ];
+        renderChecks();
+      }
+
+      function curlFor(request) {
+        const parts = ["curl"];
+        Object.entries(request.headers || {}).forEach(([key, value]) => {
+          parts.push("-H " + quote(key + ": " + value));
+        });
+        parts.push(quote(externalUrl(request)));
+        return parts.join(" \\\n  ");
+      }
+
+      function quote(value) {
+        return "'" + String(value).replaceAll("'", "'\\''") + "'";
+      }
+
+      function copyText(value, button) {
+        navigator.clipboard?.writeText(value);
+        const previous = button.textContent;
+        button.textContent = "copied";
+        setTimeout(() => {
+          button.textContent = previous;
+        }, 900);
+      }
+
+      async function showExplain() {
+        if (!state.lastListRequest) {
+          showModal("Explain plan", "Run a list preset first.", "No list request is available yet.");
+          return;
+        }
+        const result = await api(state.lastListRequest, { _explain: "true" });
+        if (!result.ok || !result.body || !result.body.explain) {
+          showModal("Explain plan", "EXPLAIN was not available for this request.", JSON.stringify(result.body, null, 2));
+          return;
+        }
+        const summary = summarizeExplain(result.body.explain);
+        showModal("Explain plan", "Partition pruning and index evidence from EXPLAIN ANALYZE.", summary + "\n\nRaw plan:\n" + JSON.stringify(result.body, null, 2));
+      }
+
+      function summarizeExplain(explain) {
+        let plan = explain;
+        if (typeof explain === "string") {
+          try {
+            plan = JSON.parse(explain);
+          } catch {
+            plan = explain;
           }
         }
-
-        renderDetail();
+        const text = JSON.stringify(plan);
+        const partitions = Array.from(new Set(text.match(/orders_[0-9]{4}_[0-9]{2}/g) || []));
+        const indexes = Array.from(new Set(text.match(/idx_[a-z0-9_]+/gi) || []));
+        const execution = Array.isArray(plan) && plan[0] && typeof plan[0]["Execution Time"] === "number"
+          ? plan[0]["Execution Time"].toFixed(3) + "ms"
+          : "-";
+        return [
+          "Execution time: " + execution,
+          "Partitions touched: " + (partitions.length ? partitions.join(", ") : "not surfaced by plan"),
+          "Indexes surfaced: " + (indexes.length ? indexes.join(", ") : "not surfaced by plan"),
+          "Expected access path: actor scope + date window + monthly partition + composite history index + keyset cursor"
+        ].join("\n");
       }
 
-      function renderDetail() {
-        const order = state.selectedOrder || SAMPLE_ROWS[0];
-        const items = order.items || [];
-        $("detailPanel").innerHTML =
-          "<h3>" + shortId(order.orderId) + "</h3>" +
-          "<div class=\"detail-grid\">" +
-            "<div><span>Status</span><strong>" + order.status.replaceAll("_", " ") + "</strong></div>" +
-            "<div><span>Total</span><strong>" + currency(order.totalCents) + "</strong></div>" +
-            "<div><span>Address ref</span><strong>" + (order.shipAddressRef || "detail only") + "</strong></div>" +
-            "<div><span>Payment ref</span><strong>" + (order.paymentTokenRef || "detail only") + "</strong></div>" +
-          "</div>" +
-          "<div class=\"line-items\">" +
-            (items.length ? items.map((item) => {
-              return "<div class=\"line-item\"><span>" + item.quantity + " x " + item.nameSnapshot + "</span><strong>" + currency(item.priceCents * item.quantity) + "</strong></div>";
-            }).join("") : "<div class=\"line-item\"><span>Items hydrate through the detail endpoint.</span><strong></strong></div>") +
-          "</div>";
-      }
-
-      function setCheck(id, stateName, message) {
-        const el = document.querySelector("[data-check=\"" + id + "\"]");
-        el.dataset.state = stateName;
-        el.querySelector(".check-mark").textContent =
-          stateName === "pass" ? "ok" : stateName === "warn" ? "!" : stateName === "fail" ? "x" : stateName === "running" ? "/" : "-";
-        if (message) {
-          el.querySelector("span:last-child").textContent = message;
+      function showRequest() {
+        if (!state.lastRequest) {
+          showModal("Request", "No request yet.", "Run a preset first.");
+          return;
         }
+        showModal("Request", "Headers and URL used by the live demo.", JSON.stringify({
+          method: state.lastRequest.method,
+          url: requestUrl(state.lastRequest),
+          headers: state.lastRequest.headers
+        }, null, 2) + "\n\nLast response:\n" + JSON.stringify(state.lastResponse && state.lastResponse.body, null, 2));
       }
 
-      async function runLiveQuery() {
-        $("serviceStatus").textContent = "Querying API";
-        const params = queryParams();
-        const result = await api("/v1/orders?" + params.toString(), { headers: headersForQuery() });
-        $("responseView").textContent = JSON.stringify(result.body, null, 2);
-
-        if (result.ok && result.body.data && result.body.data.length) {
-          state.rows = result.body.data;
-          state.source = "live";
-          state.page = result.body.page || { nextCursor: null, limit: Number($("limit").value) };
-        } else {
-          state.rows = sampleRows();
-          state.source = "sample";
-          state.page = result.body.page || { nextCursor: null, limit: Number($("limit").value) };
-        }
-
-        $("serviceStatus").textContent = result.ok ? "Service reachable" : "Sample mode";
-        renderRows();
-        if (state.source === "live" && state.rows[0]) {
-          await selectOrder(state.rows[0].orderId);
-        }
+      function showModal(title, subtitle, body) {
+        $("modalTitle").textContent = title;
+        $("modalSubtitle").textContent = subtitle;
+        $("modalBody").textContent = body;
+        $("infoModal").showModal();
       }
 
-      async function runChecks() {
-        $("lastChecked").textContent = "Running";
-        ["health", "auth", "scoped", "guard", "item", "cursor"].forEach((id) => setCheck(id, "running"));
-
-        const health = await api("/health");
-        setCheck("health", health.status === 200 && health.body.ok ? "pass" : "fail", "/health returned " + health.status + ".");
-
-        const auth = await api("/v1/orders");
-        setCheck("auth", auth.status === 401 ? "pass" : "fail", "Unauthenticated request returned " + auth.status + ".");
-
-        const scoped = await api("/v1/orders?" + queryParams({ limit: "2" }).toString(), { headers: headersForQuery() });
-        setCheck("scoped", scoped.status === 200 ? "pass" : "fail", "Scoped request returned " + scoped.status + ".");
-        $("responseView").textContent = JSON.stringify(scoped.body, null, 2);
-
-        const guard = await api("/v1/orders?from=2026-05-01T00%3A00%3A00.000Z", { headers: headersForQuery() });
-        setCheck("guard", guard.status === 400 ? "pass" : "fail", "One-sided date window returned " + guard.status + ".");
-
-        const item = await api("/v1/orders?item_id=77777777-7777-4777-8777-777777777777", { headers: headersForQuery() });
-        setCheck("item", item.status === 501 ? "pass" : "fail", "Deferred item search returned " + item.status + ".");
-
-        if (scoped.status === 200 && scoped.body.page && scoped.body.page.nextCursor) {
-          const second = await api("/v1/orders?" + queryParams({ limit: "2", cursor: scoped.body.page.nextCursor }).toString(), { headers: headersForQuery() });
-          setCheck("cursor", second.status === 200 ? "pass" : "fail", "Second cursor page returned " + second.status + ".");
-        } else {
-          setCheck("cursor", "warn", "Needs at least three live rows to produce a next cursor.");
-        }
-
-        $("lastChecked").textContent = new Date().toLocaleTimeString();
-      }
-
-      document.querySelectorAll("[data-actor]").forEach((button) => {
-        button.addEventListener("click", () => {
-          state.actor = button.dataset.actor;
-          document.querySelectorAll("[data-actor]").forEach((entry) => {
-            entry.setAttribute("aria-pressed", String(entry === button));
-          });
-          runLiveQuery();
+      function init() {
+        renderAll();
+        renderPresets();
+        $("lookupInput").focus();
+        $("presetGrid").addEventListener("click", (event) => {
+          const button = event.target.closest("[data-preset]");
+          if (button) runPreset(button.dataset.preset);
         });
-      });
-
-      document.querySelectorAll("[data-window]").forEach((button) => {
-        button.addEventListener("click", () => {
-          state.selectedWindow = button.dataset.window;
-          runLiveQuery();
+        $("lookupButton").addEventListener("click", runLookupInput);
+        $("lookupInput").addEventListener("keydown", (event) => {
+          if (event.key === "Enter") runLookupInput();
         });
-      });
+        $("requestButton").addEventListener("click", showRequest);
+        $("curlButton").addEventListener("click", () => {
+          if (state.lastRequest) copyText(curlFor(state.lastRequest), $("curlButton"));
+        });
+        $("explainButton").addEventListener("click", showExplain);
+        $("drawerClose").addEventListener("click", closeDrawer);
+        $("drawerBackdrop").addEventListener("click", closeDrawer);
+        $("modalClose").addEventListener("click", () => $("infoModal").close());
 
-      $("runQuery").addEventListener("click", runLiveQuery);
-      $("runChecksTop").addEventListener("click", runChecks);
-      $("useSample").addEventListener("click", () => {
-        state.rows = sampleRows();
-        state.source = "sample";
-        state.page = { nextCursor: null, limit: Number($("limit").value) };
-        $("responseView").textContent = JSON.stringify({ mode: "presentation sample", rows: state.rows.length }, null, 2);
-        renderRows();
-      });
-      ["customerId", "storeIds", "storeFilter", "statusFilter", "limit"].forEach((id) => {
-        $(id).addEventListener("change", runLiveQuery);
-      });
+        const presetFromUrl = new URLSearchParams(window.location.search).get("preset") || "ava-may";
+        runPreset(presetFromUrl);
+        runGuardrails();
+      }
 
-      renderRows();
-      runLiveQuery();
-      runChecks();
+      init();
     </script>
   </body>
 </html>`;

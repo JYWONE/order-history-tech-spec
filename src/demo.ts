@@ -155,9 +155,12 @@ export function demoPageHtml() {
       }
 
       .lookup-heading h2 {
-        font-size: clamp(27px, 4vw, 52px);
-        line-height: 0.98;
+        max-width: 900px;
+        margin: 0 auto;
+        font-size: clamp(30px, 3.4vw, 46px);
+        line-height: 1;
         letter-spacing: 0;
+        overflow-wrap: anywhere;
       }
 
       .lookup-heading p {
@@ -174,6 +177,15 @@ export function demoPageHtml() {
         gap: 10px;
         width: min(780px, 100%);
         margin: 0 auto;
+      }
+
+      .lookup-helper {
+        max-width: 780px;
+        margin: 10px auto 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+        text-align: center;
       }
 
       .lookup-input {
@@ -221,16 +233,44 @@ export function demoPageHtml() {
       }
 
       .chip {
+        display: grid;
+        min-height: 62px;
+        align-content: center;
+        gap: 3px;
         border: 1px solid var(--line);
         color: #26332f;
         background: #ffffff;
         font-size: 13px;
+        text-align: left;
       }
 
       .chip[data-active="true"] {
         color: var(--accent-strong);
         border-color: rgba(31, 122, 90, 0.34);
         background: #eaf4ee;
+      }
+
+      .chip[data-kind="start"] {
+        border-color: rgba(31, 122, 90, 0.5);
+        background: #eaf4ee;
+      }
+
+      .chip[data-kind="guard"] {
+        background: #fffdf8;
+      }
+
+      .chip strong {
+        display: block;
+        color: inherit;
+        font-size: 14px;
+        line-height: 1.2;
+      }
+
+      .chip span {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 650;
+        line-height: 1.25;
       }
 
       .primary:hover,
@@ -242,9 +282,27 @@ export function demoPageHtml() {
 
       .preset-grid {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 9px;
+        gap: 14px;
         margin-top: 18px;
+      }
+
+      .preset-section {
+        display: grid;
+        gap: 8px;
+      }
+
+      .preset-title {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .preset-buttons {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 9px;
       }
 
       .timing-strip {
@@ -628,9 +686,13 @@ export function demoPageHtml() {
           align-items: flex-start;
         }
 
-        .preset-grid {
-          grid-template-columns: 1fr;
-        }
+         .preset-grid {
+           grid-template-columns: 1fr;
+         }
+
+         .preset-buttons {
+           grid-template-columns: 1fr;
+         }
 
         .timing-strip {
           grid-template-columns: 1fr;
@@ -658,14 +720,15 @@ export function demoPageHtml() {
       <main>
         <section class="lookup-panel" aria-labelledby="lookupTitle">
           <div class="lookup-heading">
-            <h2 id="lookupTitle">Look up history without scanning all orders.</h2>
-            <p>Paste a seeded customer ID or UUIDv7 order ID, or run a preset that demonstrates scope, latency, partition pruning, cursor paging, and guardrails.</p>
+            <h2 id="lookupTitle">Fast scoped order lookup.</h2>
+            <p>Start with a working preset, then copy an order ID from the results to test the direct UUIDv7 lookup path.</p>
           </div>
 
           <div class="lookup-row">
             <input class="lookup-input" id="lookupInput" spellcheck="false" value="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa" aria-label="Lookup ID" />
             <button class="primary" id="lookupButton" type="button">Look up</button>
           </div>
+          <p class="lookup-helper">Seeded demo IDs are already wired in: Ava Chen customer, Nori Thai store, and generated order IDs in the table. The guardrail buttons intentionally return errors.</p>
 
           <div class="preset-grid" id="presetGrid" aria-label="Demo presets"></div>
         </section>
@@ -790,8 +853,10 @@ export function demoPageHtml() {
       const PRESETS = [
         {
           id: "ava-may",
-          label: "Ava Chen - May orders",
-          help: "Customer-scoped history + bounded window",
+          group: "working",
+          kind: "start",
+          label: "Start here: Ava May",
+          help: "Shows rows, DB timing, one May partition, and cursor pagination",
           request: () => listRequest({
             headers: customerHeaders(IDS.ava),
             params: { from: "2026-05-01T00:00:00.000Z", to: "2026-06-01T00:00:00.000Z", limit: "8" }
@@ -799,26 +864,46 @@ export function demoPageHtml() {
         },
         {
           id: "nori-store",
-          label: "Nori Thai - Midtown",
-          help: "Store-scoped cross-customer lookup",
+          group: "working",
+          label: "Store lookup: Nori",
+          help: "Store-scoped cross-customer history",
           request: () => listRequest({ headers: storeHeaders(IDS.nori), params: { limit: "8" } })
         },
         {
           id: "active-store",
+          group: "working",
           label: "Active store orders",
           help: "Partial active-status index path",
           request: () => listRequest({ headers: storeHeaders(IDS.nori), params: { status: "out_for_delivery", limit: "8" } })
         },
         {
+          id: "page-2",
+          group: "working",
+          label: "Page 2 cursor",
+          help: "Keyset cursor, no OFFSET",
+          run: runPageTwoPreset
+        },
+        {
+          id: "direct",
+          group: "working",
+          label: "Direct order ID",
+          help: "UUIDv7 routes to the month partition",
+          run: runDirectPreset
+        },
+        {
           id: "cross-store",
-          label: "Cross-store denied",
-          help: "Store A cannot query Store B",
+          group: "guard",
+          label: "Denied: cross-store",
+          help: "Expected 403 when Store A asks for Store B",
+          expectedStatus: 403,
           request: () => listRequest({ headers: storeHeaders(IDS.nori), params: { store_id: IDS.bean, limit: "8" } })
         },
         {
           id: "wide-window",
-          label: "Window too wide",
-          help: "Oversized reads fail fast",
+          group: "guard",
+          label: "Rejected: 93+ days",
+          help: "Expected 400 when the date window is too wide",
+          expectedStatus: 400,
           request: () => listRequest({
             headers: customerHeaders(IDS.ava),
             params: { from: "2025-01-01T00:00:00.000Z", to: "2026-06-01T00:00:00.000Z", limit: "8" }
@@ -826,21 +911,11 @@ export function demoPageHtml() {
         },
         {
           id: "item-search",
-          label: "Item search deferred",
-          help: "MVP stores items; search index later",
+          group: "guard",
+          label: "Deferred: item search",
+          help: "Expected 501 because item search is a future index",
+          expectedStatus: 501,
           request: () => listRequest({ headers: customerHeaders(IDS.ava), params: { item_id: IDS.item, limit: "8" } })
-        },
-        {
-          id: "page-2",
-          label: "Pagination - page 2",
-          help: "Keyset cursor, no OFFSET",
-          run: runPageTwoPreset
-        },
-        {
-          id: "direct",
-          label: "Direct order lookup",
-          help: "UUIDv7 routes to month partition",
-          run: runDirectPreset
         }
       ];
 
@@ -974,15 +1049,34 @@ export function demoPageHtml() {
       function renderPresets() {
         const grid = $("presetGrid");
         grid.replaceChildren();
-        PRESETS.forEach((preset) => {
-          const button = document.createElement("button");
-          button.className = "chip";
-          button.type = "button";
-          button.dataset.active = String(state.activePreset === preset.id);
-          button.dataset.preset = preset.id;
-          button.append(document.createTextNode(preset.label));
-          button.title = preset.help;
-          grid.append(button);
+        [
+          ["working", "Working lookups"],
+          ["guard", "Guardrail tests"]
+        ].forEach(([group, title]) => {
+          const section = document.createElement("div");
+          section.className = "preset-section";
+          const heading = document.createElement("div");
+          heading.className = "preset-title";
+          heading.textContent = title;
+          const buttons = document.createElement("div");
+          buttons.className = "preset-buttons";
+          PRESETS.filter((preset) => preset.group === group).forEach((preset) => {
+            const button = document.createElement("button");
+            button.className = "chip";
+            button.type = "button";
+            button.dataset.active = String(state.activePreset === preset.id);
+            button.dataset.kind = preset.kind || preset.group;
+            button.dataset.preset = preset.id;
+            button.title = preset.help;
+            const label = document.createElement("strong");
+            label.textContent = preset.label;
+            const help = document.createElement("span");
+            help.textContent = preset.help;
+            button.append(label, help);
+            buttons.append(button);
+          });
+          section.append(heading, buttons);
+          grid.append(section);
         });
       }
 
@@ -995,8 +1089,10 @@ export function demoPageHtml() {
           $("timingDetail").textContent = "Pick a preset or paste an ID to run a live lookup.";
           return;
         }
-        const ok = Number(timing.status) >= 200 && Number(timing.status) < 300;
-        addTimingPill(String(timing.status), ok ? "ok" : "fail");
+        const preset = activePreset();
+        const expectedGuardrail = Boolean(preset && preset.expectedStatus === Number(timing.status));
+        const ok = (Number(timing.status) >= 200 && Number(timing.status) < 300) || expectedGuardrail;
+        addTimingPill(expectedGuardrail ? String(timing.status) + " expected" : String(timing.status), ok ? "ok" : "fail");
         addTimingPill(timing.rows + " rows");
         addTimingPill("DB " + formatMs(timing.dbMs));
         addTimingPill("API " + formatMs(timing.appMs));
@@ -1004,9 +1100,15 @@ export function demoPageHtml() {
         addTimingPill("cursor: " + (timing.cursor ? "yes" : "no"));
 
         const window = timing.partitionWindow;
-        $("timingDetail").textContent = window
-          ? "Partition window " + window.from.slice(0, 10) + " -> " + window.to.slice(0, 10) + " (" + window.monthsSpanned + " month" + (window.monthsSpanned === 1 ? "" : "s") + "). DB time is separated from Render/network round trip."
-          : "DB time is shown when the endpoint returns lookup metadata. Render/network time is the browser RTT.";
+        if (expectedGuardrail) {
+          $("timingDetail").textContent = "Expected guardrail: " + preset.help + ". This proves the API rejects unsafe lookup shapes instead of scanning.";
+        } else if (!ok) {
+          $("timingDetail").textContent = "Unexpected API response: " + ((state.lastResponse.body && state.lastResponse.body.error) || "request failed") + ". Try Start here: Ava May.";
+        } else {
+          $("timingDetail").textContent = window
+            ? "Partition window " + window.from.slice(0, 10) + " -> " + window.to.slice(0, 10) + " (" + window.monthsSpanned + " month" + (window.monthsSpanned === 1 ? "" : "s") + "). DB time is separated from Render/network round trip."
+            : "DB time is shown when the endpoint returns lookup metadata. Render/network time is the browser RTT.";
+        }
 
         function addTimingPill(text, tone) {
           const pill = document.createElement("span");
@@ -1080,8 +1182,12 @@ export function demoPageHtml() {
       function emptyMessage() {
         const response = state.lastResponse;
         if (!response) return "Run a preset to load live order history.";
-        if (response.ok) return "Live API returned 0 rows. No sample fallback is being shown.";
-        return "Live API returned " + response.status + ": " + ((response.body && response.body.error) || "request failed");
+        const preset = activePreset();
+        if (preset && preset.expectedStatus === Number(response.status)) {
+          return "Expected guardrail result: " + ((response.body && response.body.error) || preset.help);
+        }
+        if (response.ok) return "Live API returned 0 rows for this filter. Try Start here: Ava May or Store lookup: Nori.";
+        return "Unexpected live API response " + response.status + ": " + ((response.body && response.body.error) || "request failed");
       }
 
       function formatDate(value) {
@@ -1125,7 +1231,13 @@ export function demoPageHtml() {
         renderTiming();
         renderRows();
         renderChecks();
-        $("resultSource").textContent = state.lastResponse ? "Live API - no sample swap" : "Live API";
+        const preset = activePreset();
+        const expectedGuardrail = Boolean(state.lastResponse && preset && preset.expectedStatus === Number(state.lastResponse.status));
+        $("resultSource").textContent = expectedGuardrail ? "Expected guardrail" : state.lastResponse ? "Live API - no sample swap" : "Live API";
+      }
+
+      function activePreset() {
+        return PRESETS.find((preset) => preset.id === state.activePreset) || null;
       }
 
       async function openOrder(order) {

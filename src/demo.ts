@@ -1212,8 +1212,9 @@ export function demoPageHtml() {
           { label: "date", value: "not run" },
           { label: "deferred", value: "not run" }
         ];
-        $("guardrailDetails").querySelector("summary").textContent =
-          "Guardrails: " + checks.map((check) => check.label + " " + check.value).join(" - ");
+        $("guardrailDetails").querySelector("summary").textContent = state.checks.length
+          ? "Guardrails: " + checks.map((check) => check.label + " " + check.value).join(" - ")
+          : "Guardrails: expand to run auth - scope - date - deferred";
         checks.forEach((check) => {
           const row = document.createElement("div");
           row.className = "check";
@@ -1482,10 +1483,12 @@ export function demoPageHtml() {
         $("drawerClose").addEventListener("click", closeDrawer);
         $("drawerBackdrop").addEventListener("click", closeDrawer);
         $("modalClose").addEventListener("click", () => $("infoModal").close());
+        $("guardrailDetails").addEventListener("toggle", () => {
+          if ($("guardrailDetails").open && !state.checks.length) runGuardrails();
+        });
 
         const presetFromUrl = new URLSearchParams(window.location.search).get("preset") || "ava-may";
         runPreset(presetFromUrl);
-        runGuardrails();
       }
 
       init();

@@ -188,6 +188,60 @@ export function demoPageHtml() {
         text-align: center;
       }
 
+      .scenario-strip {
+        display: grid;
+        gap: 8px;
+        width: min(980px, 100%);
+        margin: 16px auto 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        padding: 13px 0;
+      }
+
+      .scenario-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px 14px;
+      }
+
+      .scenario-head strong {
+        font-size: 15px;
+      }
+
+      .scenario-kicker {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 850;
+        text-transform: uppercase;
+      }
+
+      .scenario-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+      }
+
+      .scenario-pills span {
+        display: inline-flex;
+        min-height: 26px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0 9px;
+        color: #35423d;
+        background: #f8faf8;
+        font-size: 12px;
+        font-weight: 780;
+      }
+
+      .scenario-description {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
       .lookup-input {
         min-height: 48px;
         border: 1px solid var(--line);
@@ -245,14 +299,7 @@ export function demoPageHtml() {
       }
 
       .chip[data-active="true"] {
-        color: var(--accent-strong);
-        border-color: rgba(31, 122, 90, 0.34);
-        background: #eaf4ee;
-      }
-
-      .chip[data-kind="start"] {
-        border-color: rgba(31, 122, 90, 0.5);
-        background: #eaf4ee;
+        border-color: rgba(31, 122, 90, 0.42);
       }
 
       .chip[data-kind="guard"] {
@@ -690,9 +737,13 @@ export function demoPageHtml() {
            grid-template-columns: 1fr;
          }
 
-         .preset-buttons {
-           grid-template-columns: 1fr;
-         }
+          .preset-buttons {
+            grid-template-columns: 1fr;
+          }
+
+          .scenario-head {
+            display: grid;
+          }
 
         .timing-strip {
           grid-template-columns: 1fr;
@@ -729,6 +780,17 @@ export function demoPageHtml() {
             <button class="primary" id="lookupButton" type="button">Look up</button>
           </div>
           <p class="lookup-helper">Seeded demo IDs are already wired in: Ava Chen customer, Nori Thai store, and generated order IDs in the table. The guardrail buttons intentionally return errors.</p>
+
+          <div class="scenario-strip" aria-live="polite">
+            <div class="scenario-head">
+              <div>
+                <div class="scenario-kicker">Current demo path</div>
+                <strong id="scenarioTitle">Ava Chen - May history</strong>
+              </div>
+              <div class="scenario-pills" id="scenarioPills"></div>
+            </div>
+            <p class="scenario-description" id="scenarioDescription">Use a fast demo button below, or edit the field for manual lookup.</p>
+          </div>
 
           <div class="preset-grid" id="presetGrid" aria-label="Demo presets"></div>
         </section>
@@ -854,9 +916,18 @@ export function demoPageHtml() {
         {
           id: "ava-may",
           group: "working",
-          kind: "start",
-          label: "Start here: Ava May",
-          help: "Shows rows, DB timing, one May partition, and cursor pagination",
+          label: "Ava Chen - May history",
+          help: "Recommended first: rows, DB timing, one May partition, cursor",
+          inputLabel: "Customer ID",
+          inputValue: IDS.ava,
+          actorLabel: "customer Ava Chen",
+          endpointLabel: "GET /v1/orders",
+          expectedLabel: "200 rows",
+          description: "Fast demo path: list Ava Chen's May order history through the customer-scoped index and one monthly partition.",
+          requestFromInput: (value) => listRequest({
+            headers: customerHeaders(value || IDS.ava),
+            params: { from: "2026-05-01T00:00:00.000Z", to: "2026-06-01T00:00:00.000Z", limit: "8" }
+          }),
           request: () => listRequest({
             headers: customerHeaders(IDS.ava),
             params: { from: "2026-05-01T00:00:00.000Z", to: "2026-06-01T00:00:00.000Z", limit: "8" }
@@ -867,6 +938,13 @@ export function demoPageHtml() {
           group: "working",
           label: "Store lookup: Nori",
           help: "Store-scoped cross-customer history",
+          inputLabel: "Store ID",
+          inputValue: IDS.nori,
+          actorLabel: "store Nori Thai",
+          endpointLabel: "GET /v1/orders",
+          expectedLabel: "200 rows",
+          description: "Shows how a store sees its own history across customers without accepting an arbitrary store scope.",
+          requestFromInput: (value) => listRequest({ headers: storeHeaders(value || IDS.nori), params: { limit: "8" } }),
           request: () => listRequest({ headers: storeHeaders(IDS.nori), params: { limit: "8" } })
         },
         {
@@ -874,6 +952,13 @@ export function demoPageHtml() {
           group: "working",
           label: "Active store orders",
           help: "Partial active-status index path",
+          inputLabel: "Store ID",
+          inputValue: IDS.nori,
+          actorLabel: "store Nori Thai",
+          endpointLabel: "GET /v1/orders?status=out_for_delivery",
+          expectedLabel: "200 active rows",
+          description: "Shows the active-order path, which is backed by the partial index for currently moving orders.",
+          requestFromInput: (value) => listRequest({ headers: storeHeaders(value || IDS.nori), params: { status: "out_for_delivery", limit: "8" } }),
           request: () => listRequest({ headers: storeHeaders(IDS.nori), params: { status: "out_for_delivery", limit: "8" } })
         },
         {
@@ -881,6 +966,12 @@ export function demoPageHtml() {
           group: "working",
           label: "Page 2 cursor",
           help: "Keyset cursor, no OFFSET",
+          inputLabel: "Customer ID",
+          inputValue: IDS.ava,
+          actorLabel: "customer Ava Chen",
+          endpointLabel: "GET /v1/orders?cursor=...",
+          expectedLabel: "200 page 2",
+          description: "Runs page 1, takes the returned cursor, then fetches page 2 without OFFSET.",
           run: runPageTwoPreset
         },
         {
@@ -888,6 +979,12 @@ export function demoPageHtml() {
           group: "working",
           label: "Direct order ID",
           help: "UUIDv7 routes to the month partition",
+          inputLabel: "Order ID",
+          inputValue: () => state.selectedOrder?.orderId ?? "",
+          actorLabel: "customer Ava Chen",
+          endpointLabel: "GET /v1/orders/:orderId",
+          expectedLabel: "200 detail",
+          description: "Uses a UUIDv7 order ID to derive the month partition, then hydrates line items for the detail view.",
           run: runDirectPreset
         },
         {
@@ -895,15 +992,32 @@ export function demoPageHtml() {
           group: "guard",
           label: "Denied: cross-store",
           help: "Expected 403 when Store A asks for Store B",
+          inputLabel: "Target store ID",
+          inputValue: IDS.bean,
+          actorLabel: "store Nori Thai",
+          endpointLabel: "GET /v1/orders?store_id=...",
+          expectedLabel: "403 expected",
+          description: "Proves IDOR protection: Nori Thai cannot ask the API for Bean & Batch's store history.",
           expectedStatus: 403,
+          requestFromInput: (value) => listRequest({ headers: storeHeaders(IDS.nori), params: { store_id: value || IDS.bean, limit: "8" } }),
           request: () => listRequest({ headers: storeHeaders(IDS.nori), params: { store_id: IDS.bean, limit: "8" } })
         },
         {
           id: "wide-window",
           group: "guard",
-          label: "Rejected: 93+ days",
-          help: "Expected 400 when the date window is too wide",
+          label: "Rejected: window > 93d",
+          help: "Expected 400 for a 17-month date window",
+          inputLabel: "Customer ID",
+          inputValue: IDS.ava,
+          actorLabel: "customer Ava Chen",
+          endpointLabel: "GET /v1/orders?from=2025-01-01&to=2026-06-01",
+          expectedLabel: "400 expected",
+          description: "This intentionally asks for about 17 months. The API rejects it because broad history reads must be split into bounded windows.",
           expectedStatus: 400,
+          requestFromInput: (value) => listRequest({
+            headers: customerHeaders(value || IDS.ava),
+            params: { from: "2025-01-01T00:00:00.000Z", to: "2026-06-01T00:00:00.000Z", limit: "8" }
+          }),
           request: () => listRequest({
             headers: customerHeaders(IDS.ava),
             params: { from: "2025-01-01T00:00:00.000Z", to: "2026-06-01T00:00:00.000Z", limit: "8" }
@@ -914,7 +1028,14 @@ export function demoPageHtml() {
           group: "guard",
           label: "Deferred: item search",
           help: "Expected 501 because item search is a future index",
+          inputLabel: "Item ID",
+          inputValue: IDS.item,
+          actorLabel: "customer Ava Chen",
+          endpointLabel: "GET /v1/orders?item_id=...",
+          expectedLabel: "501 expected",
+          description: "Shows the product boundary: item data is stored for detail, but item-history search needs a separate index later.",
           expectedStatus: 501,
+          requestFromInput: (value) => listRequest({ headers: customerHeaders(IDS.ava), params: { item_id: value || IDS.item, limit: "8" } }),
           request: () => listRequest({ headers: customerHeaders(IDS.ava), params: { item_id: IDS.item, limit: "8" } })
         }
       ];
@@ -1050,8 +1171,8 @@ export function demoPageHtml() {
         const grid = $("presetGrid");
         grid.replaceChildren();
         [
-          ["working", "Working lookups"],
-          ["guard", "Guardrail tests"]
+          ["working", "Fast demo buttons"],
+          ["guard", "Guardrail checks"]
         ].forEach(([group, title]) => {
           const section = document.createElement("div");
           section.className = "preset-section";
@@ -1078,6 +1199,60 @@ export function demoPageHtml() {
           section.append(heading, buttons);
           grid.append(section);
         });
+      }
+
+      function renderScenario() {
+        const preset = activePreset();
+        const value = $("lookupInput").value.trim();
+        $("scenarioTitle").textContent = preset ? preset.label : "Manual lookup";
+
+        const pills = $("scenarioPills");
+        pills.replaceChildren();
+        scenarioPills(preset, value).forEach((text) => {
+          const pill = document.createElement("span");
+          pill.textContent = text;
+          pills.append(pill);
+        });
+
+        $("scenarioDescription").textContent = preset
+          ? preset.description
+          : manualScenarioDescription(value);
+      }
+
+      function scenarioPills(preset, value) {
+        if (!preset) {
+          if (uuidV7(value)) return ["Order ID", "GET /v1/orders/:orderId", "200 detail"];
+          if (uuid(value)) return ["Customer ID", "GET /v1/orders", "200 rows"];
+          return ["Paste an ID", "customer UUID or UUIDv7 order ID", "manual"];
+        }
+
+        return [
+          preset.inputLabel + ": " + shortId(value || presetInputValue(preset) || "not set"),
+          preset.actorLabel,
+          preset.endpointLabel,
+          preset.expectedLabel
+        ];
+      }
+
+      function manualScenarioDescription(value) {
+        if (uuidV7(value)) return "Manual direct lookup: the UUIDv7 timestamp routes the request to the order's month partition.";
+        if (uuid(value)) return "Manual customer lookup: the ID is treated as a customer ID and uses the bounded latest history window.";
+        return "Edit the field to run a manual lookup. Use a customer UUID for history or a UUIDv7 order ID for direct detail.";
+      }
+
+      function presetInputValue(preset) {
+        return typeof preset.inputValue === "function" ? preset.inputValue() : preset.inputValue;
+      }
+
+      function setInputForPreset(preset) {
+        const value = presetInputValue(preset);
+        if (value) $("lookupInput").value = value;
+      }
+
+      function requestForPreset(preset, value) {
+        if (preset.requestFromInput) return preset.requestFromInput(value);
+        if (preset.request) return preset.request();
+        return null;
       }
 
       function renderTiming() {
@@ -1229,6 +1404,7 @@ export function demoPageHtml() {
 
       function renderAll() {
         renderPresets();
+        renderScenario();
         renderTiming();
         renderRows();
         renderChecks();
@@ -1242,6 +1418,8 @@ export function demoPageHtml() {
       }
 
       async function openOrder(order) {
+        state.activePreset = "direct";
+        $("lookupInput").value = order.orderId;
         await loadDetail(order.orderId, state.lastRequest ? state.lastRequest.headers : customerHeaders(IDS.ava), { quiet: false });
         openDrawer();
       }
@@ -1316,16 +1494,21 @@ export function demoPageHtml() {
         const preset = PRESETS.find((entry) => entry.id === id);
         if (!preset) return;
         state.activePreset = id;
+        setInputForPreset(preset);
+        renderPresets();
+        renderScenario();
         history.replaceState(null, "", "?preset=" + encodeURIComponent(id));
         if (preset.run) {
-          await preset.run();
+          await preset.run($("lookupInput").value.trim());
         } else {
-          await runRequest(preset.request());
+          const request = requestForPreset(preset, $("lookupInput").value.trim());
+          if (request) await runRequest(request);
         }
       }
 
-      async function runPageTwoPreset() {
-        const base = PRESETS.find((preset) => preset.id === "ava-may").request();
+      async function runPageTwoPreset(userId) {
+        const ava = PRESETS.find((preset) => preset.id === "ava-may");
+        const base = ava.requestFromInput(userId || IDS.ava);
         const first = await api(base);
         const cursor = first.body && first.body.page && first.body.page.nextCursor;
         if (!cursor) {
@@ -1339,8 +1522,8 @@ export function demoPageHtml() {
         await runRequest({ ...base, params: { ...base.params, cursor } });
       }
 
-      async function runDirectPreset() {
-        let orderId = state.selectedOrder && state.selectedOrder.orderId;
+      async function runDirectPreset(value) {
+        let orderId = uuidV7(value) ? value : state.selectedOrder && state.selectedOrder.orderId;
         if (!orderId) {
           const base = PRESETS.find((preset) => preset.id === "ava-may").request();
           const first = await api(base);
@@ -1355,8 +1538,18 @@ export function demoPageHtml() {
 
       async function runLookupInput() {
         const value = $("lookupInput").value.trim();
-        state.activePreset = "";
         history.replaceState(null, "", window.location.pathname);
+        const preset = activePreset();
+        if (preset) {
+          if (preset.run) {
+            await preset.run(value);
+          } else {
+            const request = requestForPreset(preset, value);
+            if (request) await runRequest(request);
+          }
+          return;
+        }
+
         if (uuidV7(value)) {
           const headers = state.lastRequest ? state.lastRequest.headers : customerHeaders(IDS.ava);
           await runRequest(detailRequest(value, headers));
@@ -1474,6 +1667,11 @@ export function demoPageHtml() {
         $("lookupButton").addEventListener("click", runLookupInput);
         $("lookupInput").addEventListener("keydown", (event) => {
           if (event.key === "Enter") runLookupInput();
+        });
+        $("lookupInput").addEventListener("input", () => {
+          state.activePreset = "";
+          renderPresets();
+          renderScenario();
         });
         $("requestButton").addEventListener("click", showRequest);
         $("curlButton").addEventListener("click", () => {
